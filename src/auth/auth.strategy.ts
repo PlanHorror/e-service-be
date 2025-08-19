@@ -13,7 +13,7 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: TokenPayload) {
+  async validate(payload: TokenPayload): Promise<User> {
     return this.authService.validateUser(payload);
   }
 }
