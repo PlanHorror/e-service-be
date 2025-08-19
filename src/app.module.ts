@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DeNghiModule } from './de-nghi/de-nghi.module';
+import { AuthModule } from './admin/auth/auth.module';
 
 @Module({
-  imports: [DeNghiModule],
+  imports: [DeNghiModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
