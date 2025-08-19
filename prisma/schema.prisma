@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProposalStatus {
+  PENDING
+  AIAPPROVED
+  MANAGERAPPROVED
+  REJECTED
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email      String   @unique
+  username   String   @unique
+  password   String
+  full_name  String?
+  phone      String?
+  address    String?
+  role       Role
+  is_active  Boolean   @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  news       News[]
+}
+
+model News {
+  id          String   @id @default(uuid())
+  title      String
+  slug       String   @unique
+  body       String
+  author     User     @relation(fields: [author_id], references: [id])
+  author_id  String
+  is_published Boolean  @default(false)
+  published_at DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model ProposalTypes {
+  id          String   @id @default(uuid())
+  name        String  
+  slug       String   @unique
+  description String?  
+  display_order Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  activities  Activities[]
+}
+
+model Activities {
+  id          String   @id @default(uuid())
+  proposalType ProposalTypes @relation(fields: [proposalType_id], references: [id])
+  proposalType_id String
+  name        String  
+  slug       String   @unique
+  description String?  
+  display_order Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  proposals   Proposal[]
+  documentTemplates DocumentTemplate[]
+}
+
+model Proposal {
+  id          String   @id @default(uuid())
+  activity    Activities @relation(fields: [activity_id], references: [id])
+  activity_id  String
+  code       String   @unique
+  security_code String   @unique
+  full_name  String
+  email      String   @unique
+  phone      String
+  address    String
+  note       String?
+  respond    String?
+  status     ProposalStatus @default(PENDING)
+  completed_at DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  documents   DocumentProposal[]
+}
+
+model DocumentTemplate {
+  id          String   @id @default(uuid())
+  activity    Activities @relation(fields: [activity_id], references: [id])
+  activity_id String
+  name       String
+  quantity   Int @default(1)
+  display_order Int @default(0)
+  is_required Boolean @default(false)
+  path       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  documents   DocumentProposal[]
+}
+
+model DocumentProposal {
+  id          String   @id @default(uuid())
+  proposal    Proposal @relation(fields: [proposal_id], references: [id])
+  proposal_id String
+  document    DocumentTemplate @relation(fields: [document_id], references: [id])
+  document_id String
+  attachment_path String
+  mimetype     String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
