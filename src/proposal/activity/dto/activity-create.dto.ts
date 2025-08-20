@@ -20,6 +20,7 @@ export class ActivityCreateDto {
   slug: string;
 
   @IsString()
+  @IsNotEmpty()
   @IsOptional()
   description: string;
 

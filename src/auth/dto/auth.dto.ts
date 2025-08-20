@@ -37,16 +37,20 @@ export class RegisterDto {
 
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   full_name: string;
 
   @IsPhoneNumber('VN')
   @IsOptional()
+  @IsNotEmpty()
   phone: string;
 
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   address: string;
 
   @IsEnum(Role)
+  @IsNotEmpty()
   role: Role;
 }

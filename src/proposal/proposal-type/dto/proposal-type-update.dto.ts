@@ -18,10 +18,12 @@ export class ProposalTypeUpdateDto {
   slug: string;
 
   @IsString()
+  @IsNotEmpty()
   @IsOptional()
   description: string;
 
   @IsNumber()
+  @IsNotEmpty()
   @IsOptional()
   display_order: number;
 }

@@ -4,23 +4,27 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 
-export class ProposalTypeCreateDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @IsString()
-  @IsNotEmpty()
-  slug: string;
-
+export class DocumentTemplateUpdateDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  description: string;
+  name: string;
 
   @IsNumber()
   @IsNotEmpty()
+  @IsOptional()
+  quantity: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @IsOptional()
   display_order: number;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  @IsOptional()
+  is_required: boolean;
 }

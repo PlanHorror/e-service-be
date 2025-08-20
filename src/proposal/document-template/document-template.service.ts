@@ -1,10 +1,19 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { DocumentTemplate } from 'generated/prisma';
+import {
+  CreateDocumentTemplate,
+  deleteFile,
+  generateUniqueFileName,
+  saveFile,
+} from 'src/common';
 import { PrismaService } from 'src/prisma.service';
+import { DocumentTemplateCreateDto } from './dto/document-template-create.dto';
+import { DocumentTemplateUpdateDto } from './dto/document-template-update.dto';
 
 @Injectable()
 export class DocumentTemplateService {
@@ -29,7 +38,7 @@ export class DocumentTemplateService {
     }
   }
 
-  async createDocumentTemplate(data: any) {
+  async createDocumentTemplate(data: CreateDocumentTemplate) {
     try {
       return await this.prisma.documentTemplate.create({
         data,
@@ -69,5 +78,51 @@ export class DocumentTemplateService {
         'Failed to delete document template',
       );
     }
+  }
+
+  async createDocumentTemplateService(
+    data: DocumentTemplateCreateDto,
+    file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Document is required');
+    }
+    const file_name = generateUniqueFileName(file);
+    const path = `${process.env.ATTACHMENTS_PATH || 'attachments'}/${file_name}`;
+    try {
+      saveFile(file, path);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Failed to save the document');
+    }
+    return await this.createDocumentTemplate({
+      ...data,
+      path,
+    });
+  }
+
+  async updateDocumentTemplateService(
+    id: string,
+    data: DocumentTemplateUpdateDto,
+    file?: Express.Multer.File,
+  ) {
+    const existingTemplate = await this.getDocumentTemplateById(id);
+    if (file) {
+      // Delete old file
+      deleteFile(existingTemplate.path);
+      const file_name = generateUniqueFileName(file);
+      const path = `${process.env.ATTACHMENTS_PATH || 'attachments'}/${file_name}`;
+      try {
+        saveFile(file, path);
+      } catch (error) {
+        console.error(error);
+        throw new InternalServerErrorException('Failed to save the document');
+      }
+      return await this.updateDocumentTemplate(id, {
+        ...data,
+        path,
+      });
+    }
+    return await this.updateDocumentTemplate(id, data);
   }
 }
