@@ -8,5 +8,6 @@ import { ProposalTypeModule } from '../proposal-type/proposal-type.module';
   providers: [ActivityService, PrismaService],
   controllers: [ActivityController],
   imports: [ProposalTypeModule],
+  exports: [ActivityService],
 })
 export class ActivityModule {}

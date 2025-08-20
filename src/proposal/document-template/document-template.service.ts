@@ -14,10 +14,14 @@ import {
 import { PrismaService } from 'src/prisma.service';
 import { DocumentTemplateCreateDto } from './dto/document-template-create.dto';
 import { DocumentTemplateUpdateDto } from './dto/document-template-update.dto';
+import { ActivityService } from '../activity/activity.service';
 
 @Injectable()
 export class DocumentTemplateService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityService: ActivityService,
+  ) {}
 
   async getAllDocumentTemplates() {
     return this.prisma.documentTemplate.findMany();
@@ -33,7 +37,6 @@ export class DocumentTemplateService {
       }
       return documentTemplate;
     } catch (error) {
-      console.error(error);
       throw new NotFoundException('Document template not found');
     }
   }
@@ -92,6 +95,7 @@ export class DocumentTemplateService {
     if (!file) {
       throw new BadRequestException('Document is required');
     }
+    await this.activityService.getActivityById(data.activity_id);
     const file_name = generateUniqueFileName(file);
     const path = `${process.env.ATTACHMENTS_PATH || 'attachments'}/${file_name}`;
     try {

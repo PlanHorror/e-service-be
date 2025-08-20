@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsNotEmpty,
@@ -15,15 +16,17 @@ export class DocumentTemplateCreateDto {
   @IsNotEmpty()
   name: string;
 
-  @IsNumber()
   @IsNotEmpty()
+  @Transform(({ value }) => Number(value))
   quantity: number;
 
   @IsNumber()
   @IsNotEmpty()
+  @Transform(({ value }) => Number(value))
   display_order: number;
 
   @IsBoolean()
   @IsNotEmpty()
+  @Transform(({ value }) => Boolean(value))
   is_required: boolean;
 }
