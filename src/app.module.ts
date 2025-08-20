@@ -6,8 +6,6 @@ import { AuthModule } from './auth/auth.module';
 import { AccountModule } from './account/account.module';
 import { ProposalTypeModule } from './proposal/proposal-type/proposal-type.module';
 import { ActivityModule } from './proposal/activity/activity.module';
-import { ActivityService } from './porposal/activity/activity.service';
-import { ActivityController } from './porposal/activity/activity.controller';
 
 @Module({
   imports: [
@@ -17,7 +15,7 @@ import { ActivityController } from './porposal/activity/activity.controller';
     ActivityModule,
     AdminAuthModule,
   ],
-  controllers: [AppController, ActivityController],
-  providers: [AppService, ActivityService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
