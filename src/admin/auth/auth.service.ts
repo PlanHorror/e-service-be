@@ -9,7 +9,7 @@ import { TokenPayload } from 'src/common';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
-export class AuthService {
+export class AdminAuthService {
   constructor(private prismaService: PrismaService) {}
 
   async validateUser(payload: TokenPayload): Promise<User> {
