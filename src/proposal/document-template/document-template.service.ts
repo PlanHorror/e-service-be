@@ -67,7 +67,12 @@ export class DocumentTemplateService {
   }
 
   async deleteDocumentTemplate(id: string) {
-    await this.getDocumentTemplateById(id);
+    const documentTemplate = await this.getDocumentTemplateById(id);
+    try {
+      deleteFile(documentTemplate.path);
+    } catch {
+      console.error('Failed to delete file associated with document template');
+    }
     try {
       return await this.prisma.documentTemplate.delete({
         where: { id },
