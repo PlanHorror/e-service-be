@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { AccountModule } from './account/account.module';
 import { ProposalTypeModule } from './proposal/proposal-type/proposal-type.module';
 import { ActivityModule } from './proposal/activity/activity.module';
+import { DocumentTemplateModule } from './proposal/document-template/document-template.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ActivityModule } from './proposal/activity/activity.module';
     ProposalTypeModule,
     ActivityModule,
     AdminAuthModule,
+    DocumentTemplateModule,
   ],
   controllers: [AppController],
   providers: [AppService],
