@@ -6,13 +6,15 @@ import {
   IsString,
 } from 'class-validator';
 
-export class ProposalTypeCreateDto {
+export class ProposalTypeUpdateDto {
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   name: string;
 
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   slug: string;
 
   @IsString()
@@ -20,5 +22,6 @@ export class ProposalTypeCreateDto {
   description: string;
 
   @IsNumber()
+  @IsOptional()
   display_order: number;
 }

@@ -26,6 +26,7 @@ export class ProposalTypeService {
       }
       return proposalType;
     } catch (error) {
+      console.log(error);
       throw new NotFoundException('Proposal type not found');
     }
   }
@@ -41,13 +42,14 @@ export class ProposalTypeService {
           'Proposal type with this slug already exists',
         );
       }
+      console.log(error);
       throw new InternalServerErrorException('Error creating proposal type');
     }
   }
 
   async updateProposalType(id: string, data: Partial<ProposalTypes>) {
+    await this.getProposalTypeById(id);
     try {
-      await this.getProposalTypeById(id);
       return await this.prisma.proposalTypes.update({
         where: { id },
         data,
@@ -58,17 +60,19 @@ export class ProposalTypeService {
           'Proposal type with this slug already exists',
         );
       }
+      console.log(error);
       throw new InternalServerErrorException('Error updating proposal type');
     }
   }
 
   async deleteProposalType(id: string) {
+    await this.getProposalTypeById(id);
     try {
-      await this.getProposalTypeById(id);
       return await this.prisma.proposalTypes.delete({
         where: { id },
       });
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException('Error deleting proposal type');
     }
   }
