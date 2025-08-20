@@ -40,8 +40,9 @@ export class ActivityService {
       data.proposal_type_id,
     );
     try {
+      const { proposal_type_id, ...activityData } = data;
       return await this.prisma.activities.create({
-        data: { ...data, proposalType_id: proposalType.id },
+        data: { ...activityData, proposalType_id: proposalType.id },
       });
     } catch (error) {
       if (error.code === 'P2002') {
@@ -69,7 +70,6 @@ export class ActivityService {
     try {
       return await this.prisma.activities.delete({ where: { id } });
     } catch (error) {
-      console.error(error);
       throw new InternalServerErrorException('Error deleting activity');
     }
   }
