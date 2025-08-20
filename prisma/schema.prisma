@@ -40,6 +40,7 @@ model User {
   updated_at  DateTime @updatedAt
 
   news       News[]
+  proposalReviews ProposalReview[]
 }
 
 model News {
@@ -100,6 +101,7 @@ model Proposal {
   updated_at  DateTime @updatedAt
 
   documents   DocumentProposal[]
+  proposalReviews ProposalReview[]
 }
 
 model DocumentTemplate {
@@ -127,4 +129,16 @@ model DocumentProposal {
   mimetype     String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+}
+
+model ProposalReview {
+  id        String   @id @default(uuid())
+  proposal  Proposal @relation(fields: [proposal_id], references: [id])
+  proposal_id String
+  reviewer  User     @relation(fields: [reviewer_id], references: [id])
+  reviewer_id String
+  comments  String?
+  accepted  Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
