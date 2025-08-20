@@ -3,9 +3,14 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { User } from 'generated/prisma';
+import { Role, User } from 'generated/prisma';
+import { LoginDto, RegisterDto } from 'src/auth/dto/auth.dto';
 import { PrismaService } from 'src/prisma.service';
+import * as bcrypt from 'bcrypt';
+import { CreateUser, TokenPayload } from 'src/common';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AccountService {
@@ -29,7 +34,7 @@ export class AccountService {
     }
   }
 
-  async createAccount(data: User): Promise<User> {
+  async createAccount(data: CreateUser): Promise<User> {
     try {
       return await this.prismaService.user.create({
         data,
@@ -62,5 +67,40 @@ export class AccountService {
     return this.prismaService.user.delete({
       where: { id },
     });
+  }
+
+  async newAccount(data: RegisterDto) {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(data.password, salt);
+    const user = await this.createAccount({
+      ...data,
+      password: hashedPassword,
+      is_active: true,
+    });
+    return user;
+  }
+
+  async verifyAccount(data: LoginDto) {
+    const user = await this.prismaService.user.findUnique({
+      where: { username: data.username },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!user.is_active) {
+      throw new UnauthorizedException('User is not active');
+    }
+    const isMatch = await bcrypt.compare(data.password, user.password);
+    if (!isMatch) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    return user;
+  }
+
+  async generateAccessToken(user: User): Promise<string> {
+    const payload: TokenPayload = {
+      ...user,
+    };
+    return jwt.sign(payload, process.env.JWT_SECRET || 'defaultSecret', {});
   }
 }
