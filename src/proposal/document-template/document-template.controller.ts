@@ -1,4 +1,4 @@
 import { Controller } from '@nestjs/common';
 
-@Controller('document-template')
+@Controller('proposal/document-template')
 export class DocumentTemplateController {}
