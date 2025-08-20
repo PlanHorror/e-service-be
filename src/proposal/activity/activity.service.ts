@@ -1,13 +1,20 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
+import { ActivityCreateDto } from './dto/activity-create.dto';
+import { ProposalTypeService } from '../proposal-type/proposal-type.service';
+import { ActivityUpdateDto } from './dto/activity-update.dto';
 
 @Injectable()
 export class ActivityService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly proposalTypeService: ProposalTypeService,
+  ) {}
 
   async getAllActivities() {
     return this.prisma.activities.findMany();
@@ -28,19 +35,30 @@ export class ActivityService {
     }
   }
 
-  async createActivity(data: any) {
+  async createActivity(data: ActivityCreateDto) {
+    const proposalType = await this.proposalTypeService.getProposalTypeById(
+      data.proposal_type_id,
+    );
     try {
-      return await this.prisma.activities.create({ data });
+      return await this.prisma.activities.create({
+        data: { ...data, proposalType_id: proposalType.id },
+      });
     } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Activity with this slug already exists');
+      }
       console.error(error);
       throw new InternalServerErrorException('Error creating activity');
     }
   }
 
-  async updateActivity(id: string, data: any) {
+  async updateActivity(id: string, data: ActivityUpdateDto) {
     try {
       return await this.prisma.activities.update({ where: { id }, data });
     } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Activity with this slug already exists');
+      }
       console.error(error);
       throw new InternalServerErrorException('Error updating activity');
     }

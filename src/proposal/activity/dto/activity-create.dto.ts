@@ -1,12 +1,16 @@
 import {
-  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 
-export class ProposalTypeCreateDto {
+export class ActivityCreateDto {
+  @IsUUID()
+  @IsNotEmpty()
+  proposal_type_id: string;
+
   @IsString()
   @IsNotEmpty()
   name: string;
