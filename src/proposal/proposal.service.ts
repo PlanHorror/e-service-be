@@ -60,4 +60,17 @@ export class ProposalService {
       throw new InternalServerErrorException('Error deleting proposal');
     }
   }
+
+  async findProposalsByCode(security_code: string, code: string) {
+    const proposals = await this.prisma.proposal.findUnique({
+      where: {
+        security_code,
+        code,
+      },
+    });
+    if (!proposals) {
+      throw new NotFoundException('Proposals not found');
+    }
+    return proposals;
+  }
 }
