@@ -48,7 +48,7 @@ model News {
   title      String
   slug       String   @unique
   body       String
-  author     User     @relation(fields: [author_id], references: [id])
+  author     User     @relation(fields: [author_id], references: [id], onDelete: Cascade)
   author_id  String
   is_published Boolean  @default(false)
   published_at DateTime?
@@ -70,7 +70,7 @@ model ProposalTypes {
 
 model Activities {
   id          String   @id @default(uuid())
-  proposalType ProposalTypes @relation(fields: [proposalType_id], references: [id])
+  proposalType ProposalTypes @relation(fields: [proposalType_id], references: [id], onDelete: Cascade)
   proposalType_id String
   name        String  
   slug       String   @unique
@@ -85,7 +85,7 @@ model Activities {
 
 model Proposal {
   id          String   @id @default(uuid())
-  activity    Activities @relation(fields: [activity_id], references: [id])
+  activity    Activities @relation(fields: [activity_id], references: [id], onDelete: Cascade)
   activity_id  String
   code       String   @unique
   security_code String   @unique
@@ -106,7 +106,7 @@ model Proposal {
 
 model DocumentTemplate {
   id          String   @id @default(uuid())
-  activity    Activities @relation(fields: [activity_id], references: [id])
+  activity    Activities @relation(fields: [activity_id], references: [id], onDelete: Cascade)
   activity_id String
   name       String
   quantity   Int @default(1)
@@ -121,9 +121,9 @@ model DocumentTemplate {
 
 model DocumentProposal {
   id          String   @id @default(uuid())
-  proposal    Proposal @relation(fields: [proposal_id], references: [id])
+  proposal    Proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   proposal_id String
-  document    DocumentTemplate @relation(fields: [document_id], references: [id])
+  document    DocumentTemplate @relation(fields: [document_id], references: [id], onDelete: Cascade)
   document_id String
   attachment_path String
   mimetype     String
@@ -133,9 +133,9 @@ model DocumentProposal {
 
 model ProposalReview {
   id        String   @id @default(uuid())
-  proposal  Proposal @relation(fields: [proposal_id], references: [id])
+  proposal  Proposal @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
   proposal_id String
-  reviewer  User     @relation(fields: [reviewer_id], references: [id])
+  reviewer  User     @relation(fields: [reviewer_id], references: [id], onDelete: Cascade)
   reviewer_id String
   comments  String?
   accepted  Boolean @default(false)
