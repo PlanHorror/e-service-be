@@ -10,7 +10,8 @@ export class DocumentCreateDto {
   document_id: string;
 }
 
-export class DocumentCreateMultipleDto {
-  @ValidateNested({ each: true })
-  documents: DocumentCreateDto[];
+export class DocumentNested {
+  @IsUUID()
+  @IsNotEmpty()
+  document_id: string;
 }

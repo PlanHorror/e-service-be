@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -88,9 +88,9 @@ model Proposal {
   activity    Activities @relation(fields: [activity_id], references: [id], onDelete: Cascade)
   activity_id  String
   code       String   @unique
-  security_code String   @unique
+  security_code String   
   full_name  String
-  email      String   @unique
+  email      String   
   phone      String
   address    String
   note       String?

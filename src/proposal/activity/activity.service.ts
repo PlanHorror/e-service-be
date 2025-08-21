@@ -24,6 +24,9 @@ export class ActivityService {
     try {
       const activity = await this.prisma.activities.findUnique({
         where: { id },
+        include: {
+          documentTemplates: true,
+        },
       });
       if (!activity) {
         throw new NotFoundException('Activity not found');

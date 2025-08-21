@@ -4,13 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { DocumentCreateMultipleDto } from './dto/document-create.dto';
+import { DocumentCreateDto, DocumentNested } from './dto/document-create.dto';
 import {
   deleteFile,
   Document,
   generateUniqueFileName,
   saveFile,
 } from 'src/common';
+import { DocumentProposal, DocumentTemplate } from 'generated/prisma';
 
 @Injectable()
 export class DocumentService {
@@ -34,7 +35,7 @@ export class DocumentService {
     }
   }
 
-  async createDocument(data: any) {
+  async createDocument(data: Document) {
     try {
       return await this.prisma.documentProposal.create({
         data,
@@ -44,7 +45,7 @@ export class DocumentService {
     }
   }
 
-  async updateDocument(id: string, data: any) {
+  async updateDocument(id: string, data: Partial<DocumentProposal>) {
     await this.getDocumentById(id);
     try {
       return await this.prisma.documentProposal.update({
@@ -68,20 +69,29 @@ export class DocumentService {
     }
   }
 
-  async createMultipleDocument(data: Document[], files: Express.Multer.File[]) {
-    let file_paths: Array<string> = [];
+  async createMultipleDocument(
+    proposal_id: string,
+    data: DocumentTemplate[],
+    files: Express.Multer.File[],
+  ) {
     try {
-      files.map((file) => {
-        const file_name = generateUniqueFileName(file);
-        const path = `${process.env.ATTACHMENTS_PATH || 'attachments'}/${file_name}`;
-        file_paths.push(path);
+      let documents: any[] = [];
+      data.forEach((doc) => {
+        const fieldnamePrefix = `files[${doc.id}]`;
+        const listFile = files.filter((file) =>
+          file.fieldname.startsWith(fieldnamePrefix),
+        );
+        listFile.forEach((file) => {
+          const path = `${process.env.ATTACHMENTS_PATH || 'attachments'}/${generateUniqueFileName(file)}`;
+          saveFile(file, path);
+          documents.push({
+            proposal_id,
+            document_id: doc.id,
+            attachment_path: path,
+            mimetype: file.mimetype,
+          });
+        });
       });
-      const documents = data.map((doc, index) => ({
-        proposal_id: doc.proposal_id,
-        document_id: doc.document_id,
-        attachment_path: file_paths[index],
-        mimetype: files[index].mimetype,
-      }));
       return await this.prisma.documentProposal.createMany({
         data: documents,
       });
