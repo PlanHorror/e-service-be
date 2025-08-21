@@ -9,6 +9,7 @@ import { ActivityModule } from './proposal/activity/activity.module';
 import { DocumentTemplateModule } from './proposal/document-template/document-template.module';
 import { ProposalModule } from './proposal/proposal.module';
 import { CronModule } from './cron/cron.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CronModule } from './cron/cron.module';
     DocumentTemplateModule,
     ProposalModule,
     CronModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
