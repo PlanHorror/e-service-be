@@ -26,7 +26,7 @@ export class ReviewCreateDto {
   @IsString()
   @IsOptional()
   @IsNotEmpty()
-  comment: string;
+  comments: string;
 
   @ApiProperty({
     description: 'Whether the proposal is accepted or rejected',
