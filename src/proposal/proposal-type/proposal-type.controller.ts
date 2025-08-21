@@ -1,4 +1,11 @@
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
+import {
   Body,
   Controller,
   Delete,
@@ -12,38 +19,58 @@ import { ProposalTypeService } from './proposal-type.service';
 import { ProposalTypeCreateDto } from './dto/proposal-type-create.dto';
 import { ProposalTypeUpdateDto } from './dto/proposal-type-update.dto';
 
+@ApiTags('Proposal Types')
 @Controller('proposal/type')
 export class ProposalTypeController {
   constructor(private readonly proposalTypeService: ProposalTypeService) {}
 
+  @ApiOperation({ summary: 'Get all proposal types' })
+  @ApiResponse({ status: 200, description: 'List of proposal types.' })
   @Get()
-  getAllProposalTypes() {
+  async getAllProposalTypes() {
     return this.proposalTypeService.getAllProposalTypes();
   }
 
+  @ApiOperation({ summary: 'Get proposal type by ID' })
+  @ApiParam({ name: 'id', type: String, description: 'Proposal type ID' })
+  @ApiResponse({ status: 200, description: 'Proposal type found.' })
+  @ApiResponse({ status: 404, description: 'Proposal type not found.' })
   @Get(':id')
-  getProposalTypeById(@Param('id') id: string) {
+  async getProposalTypeById(@Param('id') id: string) {
     return this.proposalTypeService.getProposalTypeById(id);
   }
 
+  @ApiOperation({ summary: 'Create a new proposal type' })
+  @ApiBody({ type: ProposalTypeCreateDto })
+  @ApiResponse({ status: 201, description: 'Proposal type created.' })
+  @ApiResponse({
+    status: 409,
+    description: 'Proposal type with this slug already exists.',
+  })
   @Post()
-  createProposalType(@Body() createProposalTypeDto: ProposalTypeCreateDto) {
-    return this.proposalTypeService.createProposalType(createProposalTypeDto);
+  async createProposalType(@Body() data: ProposalTypeCreateDto) {
+    return this.proposalTypeService.createProposalType(data);
   }
 
+  @ApiOperation({ summary: 'Update a proposal type' })
+  @ApiParam({ name: 'id', type: String, description: 'Proposal type ID' })
+  @ApiBody({ type: ProposalTypeUpdateDto })
+  @ApiResponse({ status: 200, description: 'Proposal type updated.' })
+  @ApiResponse({ status: 404, description: 'Proposal type not found.' })
   @Patch(':id')
-  updateProposalType(
+  async updateProposalType(
     @Param('id') id: string,
-    @Body() updateProposalTypeDto: ProposalTypeUpdateDto,
+    @Body() data: ProposalTypeUpdateDto,
   ) {
-    return this.proposalTypeService.updateProposalType(
-      id,
-      updateProposalTypeDto,
-    );
+    return this.proposalTypeService.updateProposalType(id, data);
   }
 
+  @ApiOperation({ summary: 'Delete a proposal type' })
+  @ApiParam({ name: 'id', type: String, description: 'Proposal type ID' })
+  @ApiResponse({ status: 200, description: 'Proposal type deleted.' })
+  @ApiResponse({ status: 404, description: 'Proposal type not found.' })
   @Delete(':id')
-  deleteProposalType(@Param('id') id: string) {
+  async deleteProposalType(@Param('id') id: string) {
     return this.proposalTypeService.deleteProposalType(id);
   }
 }

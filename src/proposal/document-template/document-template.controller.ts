@@ -1,4 +1,12 @@
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+  ApiConsumes,
+} from '@nestjs/swagger';
+import {
   Body,
   Controller,
   Delete,
@@ -18,22 +26,37 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentTemplateCreateDto } from './dto/document-template-create.dto';
 import { DocumentTemplateUpdateDto } from './dto/document-template-update.dto';
 
+@ApiTags('Document Templates')
 @Controller('proposal/template')
 export class DocumentTemplateController {
   constructor(
     private readonly documentTemplateService: DocumentTemplateService,
   ) {}
 
+  @ApiOperation({ summary: 'Get all document templates' })
+  @ApiResponse({ status: 200, description: 'List of document templates.' })
   @Get()
   async getAllTemplates() {
     return this.documentTemplateService.getAllDocumentTemplates();
   }
 
+  @ApiOperation({ summary: 'Get document template by ID' })
+  @ApiParam({ name: 'id', type: String, description: 'Document template ID' })
+  @ApiResponse({ status: 200, description: 'Document template found.' })
+  @ApiResponse({ status: 404, description: 'Document template not found.' })
   @Get(':id')
   async getTemplateById(@Param('id') id: string) {
     return this.documentTemplateService.getDocumentTemplateById(id);
   }
 
+  @ApiOperation({ summary: 'Create a new document template' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Document template data with file',
+    type: DocumentTemplateCreateDto,
+  })
+  @ApiResponse({ status: 201, description: 'Document template created.' })
+  @ApiResponse({ status: 422, description: 'File validation failed.' })
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async createTemplate(
@@ -53,6 +76,15 @@ export class DocumentTemplateController {
     );
   }
 
+  @ApiOperation({ summary: 'Update a document template' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', type: String, description: 'Document template ID' })
+  @ApiBody({
+    description: 'Document template data with optional file',
+    type: DocumentTemplateUpdateDto,
+  })
+  @ApiResponse({ status: 200, description: 'Document template updated.' })
+  @ApiResponse({ status: 404, description: 'Document template not found.' })
   @Patch(':id')
   @UseInterceptors(FileInterceptor('file'))
   async updateTemplate(
@@ -75,6 +107,10 @@ export class DocumentTemplateController {
     );
   }
 
+  @ApiOperation({ summary: 'Delete a document template' })
+  @ApiParam({ name: 'id', type: String, description: 'Document template ID' })
+  @ApiResponse({ status: 200, description: 'Document template deleted.' })
+  @ApiResponse({ status: 404, description: 'Document template not found.' })
   @Delete(':id')
   async deleteTemplate(@Param('id') id: string) {
     return this.documentTemplateService.deleteDocumentTemplate(id);
