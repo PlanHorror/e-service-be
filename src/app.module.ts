@@ -8,6 +8,7 @@ import { ProposalTypeModule } from './proposal/proposal-type/proposal-type.modul
 import { ActivityModule } from './proposal/activity/activity.module';
 import { DocumentTemplateModule } from './proposal/document-template/document-template.module';
 import { ProposalModule } from './proposal/proposal.module';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ProposalModule } from './proposal/proposal.module';
     AdminAuthModule,
     DocumentTemplateModule,
     ProposalModule,
+    CronModule,
   ],
   controllers: [AppController],
   providers: [AppService],
