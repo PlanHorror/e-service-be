@@ -101,7 +101,9 @@ export class AccountService {
 
   async generateAccessToken(user: User): Promise<string> {
     const payload: TokenPayload = {
-      ...user,
+      id: user.id,
+      username: user.username,
+      role: user.role,
     };
     return jwt.sign(payload, process.env.JWT_SECRET || 'defaultSecret', {});
   }
