@@ -17,6 +17,8 @@ export class AuthService {
   ) {}
 
   async validateUser(payload: TokenPayload): Promise<User> {
+    console.log('Payload:', payload);
+
     const user = await this.prismaService.user.findUnique({
       where: { id: payload.id },
     });
@@ -38,6 +40,9 @@ export class AuthService {
   async register(data: RegisterDto): Promise<{ accessToken: string }> {
     const user = await this.accountService.newAccount(data);
     const accessToken = await this.accountService.generateAccessToken(user);
+    if (data.confirmPassword !== data.password) {
+      throw new UnauthorizedException('Passwords do not match');
+    }
     return { accessToken };
   }
 }

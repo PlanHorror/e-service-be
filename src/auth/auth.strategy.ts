@@ -3,8 +3,10 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from './auth.service';
 import { User } from 'generated/prisma';
 import { TokenPayload } from 'src/common';
+import { Injectable } from '@nestjs/common';
 
-export class AuthStrategy extends PassportStrategy(Strategy) {
+@Injectable()
+export class AuthStrategy extends PassportStrategy(Strategy, 'auth') {
   constructor(private readonly authService: AuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
