@@ -30,7 +30,7 @@ export class ProposalController {
     return this.proposalService.getProposalById(id);
   }
 
-  @Post()
+  @Post('send')
   @UseInterceptors(AnyFilesInterceptor())
   async createProposal(
     @Body() data: ProposalCreateDto,

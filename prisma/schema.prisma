@@ -141,4 +141,6 @@ model ProposalReview {
   accepted  Boolean @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@unique([proposal_id, reviewer_id])
 }

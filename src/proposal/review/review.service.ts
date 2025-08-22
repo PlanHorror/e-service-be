@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -47,6 +48,9 @@ export class ReviewService {
         data,
       });
     } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('You have already reviewed this proposal');
+      }
       throw new InternalServerErrorException(
         `Failed to create review: ${error.message}`,
       );
@@ -60,6 +64,9 @@ export class ReviewService {
         data,
       });
     } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('You have already reviewed this proposal');
+      }
       throw new InternalServerErrorException(
         `Failed to update review: ${error.message}`,
       );

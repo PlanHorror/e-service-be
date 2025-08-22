@@ -43,6 +43,7 @@ export class AccountService {
       if (error.code === 'P2002') {
         throw new ConflictException('Username or email already exists');
       }
+      console.error('Error creating account:', error);
       throw new InternalServerErrorException('Error creating account');
     }
   }
@@ -70,10 +71,11 @@ export class AccountService {
   }
 
   async newAccount(data: RegisterDto) {
+    const { confirmPassword, ...userData } = data;
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(data.password, salt);
     const user = await this.createAccount({
-      ...data,
+      ...userData,
       password: hashedPassword,
       is_active: true,
     });
