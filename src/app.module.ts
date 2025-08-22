@@ -12,6 +12,7 @@ import { CronModule } from './cron/cron.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DocumentModule } from './proposal/document/document.module';
 import { ReviewModule } from './proposal/review/review.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -25,6 +26,9 @@ import { ReviewModule } from './proposal/review/review.module';
     DocumentModule,
     ReviewModule,
     CronModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
