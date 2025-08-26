@@ -25,6 +25,26 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
   });
-  await app.listen(process.env.PORT ?? 3000);
+
+  return app;
 }
-bootstrap();
+
+// For Vercel serverless deployment
+let app: any;
+
+export default async function handler(req: any, res: any) {
+  if (!app) {
+    app = await bootstrap();
+    await app.init();
+  }
+
+  return app.getHttpAdapter().getInstance()(req, res);
+}
+
+// For local development
+if (require.main === module) {
+  bootstrap().then(async (app) => {
+    await app.listen(process.env.PORT ?? 3000);
+    console.log(`Application is running on: ${await app.getUrl()}`);
+  });
+}
