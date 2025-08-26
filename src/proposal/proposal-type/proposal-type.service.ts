@@ -13,7 +13,13 @@ export class ProposalTypeService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllProposalTypes() {
-    return this.prisma.proposalTypes.findMany();
+    return this.prisma.proposalTypes.findMany({
+      include: {
+        activities: {
+          include: { documentTemplates: true },
+        },
+      },
+    });
   }
 
   async getProposalTypeById(id: string) {

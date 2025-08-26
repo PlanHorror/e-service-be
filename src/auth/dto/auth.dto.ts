@@ -77,3 +77,55 @@ export class RegisterDto {
   @IsNotEmpty()
   role: Role;
 }
+
+export class UpdateUserDto {
+  @ApiProperty({ description: 'Email address', example: 'john@example.com' })
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
+  @ApiProperty({ description: 'Username', example: 'john_doe' })
+  @IsString()
+  @IsOptional()
+  username?: string;
+
+  @ApiProperty({ description: 'Password', example: 'password123' })
+  @IsString()
+  @IsOptional()
+  password?: string;
+
+  @ApiProperty({
+    description: 'Full name',
+    example: 'John Doe',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  full_name?: string;
+
+  @ApiProperty({
+    description: 'Phone number',
+    example: '+84987654321',
+    required: false,
+  })
+  @IsPhoneNumber('VN')
+  @IsOptional()
+  @IsNotEmpty()
+  phone?: string;
+
+  @ApiProperty({
+    description: 'Address',
+    example: '123 Main St',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  address?: string;
+
+  @ApiProperty({ description: 'User role', enum: Role, example: Role.ADMIN })
+  @IsEnum(Role)
+  @IsOptional()
+  role?: Role;
+}

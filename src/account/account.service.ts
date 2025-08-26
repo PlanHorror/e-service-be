@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Role, User } from 'generated/prisma';
-import { LoginDto, RegisterDto } from 'src/auth/dto/auth.dto';
+import { LoginDto, RegisterDto, UpdateUserDto } from 'src/auth/dto/auth.dto';
 import { PrismaService } from 'src/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { CreateUser, TokenPayload } from 'src/common';
@@ -80,6 +80,15 @@ export class AccountService {
       is_active: true,
     });
     return user;
+  }
+
+  async updateAccountService(id: string, data: UpdateUserDto) {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(data.password, salt);
+    return this.updateAccount(id, {
+      ...data,
+      password: hashedPassword,
+    });
   }
 
   async verifyAccount(data: LoginDto) {

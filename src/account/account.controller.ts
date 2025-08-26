@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
-import { RegisterDto } from 'src/auth/dto/auth.dto';
+import { RegisterDto, UpdateUserDto } from 'src/auth/dto/auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 // @UseGuards(AuthGuard('jwt'))
@@ -33,8 +33,8 @@ export class AccountController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: RegisterDto) {
-    return this.accountService.updateAccount(id, data);
+  update(@Param('id') id: string, @Body() data: UpdateUserDto) {
+    return this.accountService.updateAccountService(id, data);
   }
 
   @Delete(':id')
