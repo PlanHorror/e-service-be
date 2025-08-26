@@ -8,7 +8,7 @@ import { PrismaService } from 'src/prisma.service';
 import { DocumentService } from './document/document.service';
 import { ProposalCreateDto } from './dto/proposal-create.dto';
 import { ActivityService } from './activity/activity.service';
-import { Proposal } from 'generated/prisma';
+import { Proposal } from '@prisma/client';
 import { generateCode, generateSecurityCode, ProposalCreate } from 'src/common';
 
 @Injectable()

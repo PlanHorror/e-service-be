@@ -7,7 +7,7 @@ import {
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
-import { Role } from 'generated/prisma';
+import { Role } from '@prisma/client';
 
 export class LoginDto {
   @ApiProperty({ description: 'Username for login', example: 'john_doe' })

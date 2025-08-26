@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { ProposalTypeCreateDto } from './dto/proposal-type-create.dto';
-import { ProposalTypes } from 'generated/prisma';
+import { ProposalTypes } from '@prisma/client';
 
 @Injectable()
 export class ProposalTypeService {

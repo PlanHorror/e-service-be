@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { ReviewCreateDto } from './dto/review-create.dto';
-import { ProposalReview, ProposalStatus, User } from 'generated/prisma';
+import { ProposalReview, ProposalStatus, User } from '@prisma/client';
 import { Review } from 'src/common';
 import { ProposalService } from '../proposal.service';
 import { ReviewUpdateDto } from './dto/review-update.dto';

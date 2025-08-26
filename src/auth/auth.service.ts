@@ -3,7 +3,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { User } from 'generated/prisma';
+import { User } from '@prisma/client';
 import { AccountService } from 'src/account/account.service';
 import { TokenPayload } from 'src/common';
 import { PrismaService } from 'src/prisma.service';

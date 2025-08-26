@@ -13,7 +13,7 @@ import { ReviewCreateDto } from './dto/review-create.dto';
 import { ReviewUpdateDto } from './dto/review-update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/common/decorators';
-import { User } from 'generated/prisma';
+import { User } from '@prisma/client';
 
 @Controller('review')
 export class ReviewController {

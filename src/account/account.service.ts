@@ -5,7 +5,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Role, User } from 'generated/prisma';
+import { Role, User } from '@prisma/client';
 import { LoginDto, RegisterDto, UpdateUserDto } from 'src/auth/dto/auth.dto';
 import { PrismaService } from 'src/prisma.service';
 import * as bcrypt from 'bcrypt';

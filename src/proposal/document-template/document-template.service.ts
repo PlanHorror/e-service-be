@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { DocumentTemplate } from 'generated/prisma';
+import { DocumentTemplate } from '@prisma/client';
 import {
   CreateDocumentTemplate,
   deleteFile,

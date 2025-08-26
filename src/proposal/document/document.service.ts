@@ -11,7 +11,7 @@ import {
   generateUniqueFileName,
   saveFile,
 } from 'src/common';
-import { DocumentProposal, DocumentTemplate } from 'generated/prisma';
+import { DocumentProposal, DocumentTemplate } from '@prisma/client';
 
 @Injectable()
 export class DocumentService {
