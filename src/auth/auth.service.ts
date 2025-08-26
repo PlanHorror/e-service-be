@@ -4,9 +4,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { AccountService } from 'src/account/account.service';
-import { TokenPayload } from 'src/common';
-import { PrismaService } from 'src/prisma.service';
+import { AccountService } from '../account/account.service';
+import { TokenPayload } from '../common';
+import { PrismaService } from '../prisma.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 
 @Injectable()

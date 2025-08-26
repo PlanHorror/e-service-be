@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../../prisma.service';
 import { ActivityCreateDto } from './dto/activity-create.dto';
 import { ProposalTypeService } from '../proposal-type/proposal-type.service';
 import { ActivityUpdateDto } from './dto/activity-update.dto';

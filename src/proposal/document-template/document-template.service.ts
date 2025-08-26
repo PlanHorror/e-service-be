@@ -10,8 +10,8 @@ import {
   deleteFile,
   generateUniqueFileName,
   saveFile,
-} from 'src/common';
-import { PrismaService } from 'src/prisma.service';
+} from '../../common';
+import { PrismaService } from '../../prisma.service';
 import { DocumentTemplateCreateDto } from './dto/document-template-create.dto';
 import { DocumentTemplateUpdateDto } from './dto/document-template-update.dto';
 import { ActivityService } from '../activity/activity.service';

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { deleteFile } from 'src/common';
-import { PrismaService } from 'src/prisma.service';
+import { deleteFile } from '../common';
+import { PrismaService } from '../prisma.service';
 import * as fs from 'fs';
 import * as path from 'path';
 

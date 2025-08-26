@@ -6,10 +6,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Role, User } from '@prisma/client';
-import { LoginDto, RegisterDto, UpdateUserDto } from 'src/auth/dto/auth.dto';
-import { PrismaService } from 'src/prisma.service';
+import { LoginDto, RegisterDto, UpdateUserDto } from '../auth/dto/auth.dto';
+import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
-import { CreateUser, TokenPayload } from 'src/common';
+import { CreateUser, TokenPayload } from '../common';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()

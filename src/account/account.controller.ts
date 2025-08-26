@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AccountService } from './account.service';
-import { RegisterDto, UpdateUserDto } from 'src/auth/dto/auth.dto';
+import { RegisterDto, UpdateUserDto } from '../auth/dto/auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 // @UseGuards(AuthGuard('jwt'))

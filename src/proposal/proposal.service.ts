@@ -4,12 +4,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 import { DocumentService } from './document/document.service';
 import { ProposalCreateDto } from './dto/proposal-create.dto';
 import { ActivityService } from './activity/activity.service';
 import { Proposal } from '@prisma/client';
-import { generateCode, generateSecurityCode, ProposalCreate } from 'src/common';
+import { generateCode, generateSecurityCode, ProposalCreate } from '../common';
 
 @Injectable()
 export class ProposalService {

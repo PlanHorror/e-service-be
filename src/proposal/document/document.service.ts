@@ -3,14 +3,14 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../../prisma.service';
 import { DocumentCreateDto, DocumentNested } from './dto/document-create.dto';
 import {
   deleteFile,
   Document,
   generateUniqueFileName,
   saveFile,
-} from 'src/common';
+} from '../../common';
 import { DocumentProposal, DocumentTemplate } from '@prisma/client';
 
 @Injectable()
