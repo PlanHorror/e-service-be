@@ -1,0 +1,810 @@
+{
+	"info": {
+		"_postman_id": "173cda67-89e1-4d68-ab29-067f9ab4ae00",
+		"name": "EService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38885974"
+	},
+	"item": [
+		{
+			"name": "Proposal Type",
+			"item": [
+				{
+					"name": "Get all proposal type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/proposal/type",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"type"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete proposal type",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/proposal/type/f3e9fac4-7fe6-416d-a5c3-6914a433e0c7",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"type",
+								"f3e9fac4-7fe6-416d-a5c3-6914a433e0c7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get proposal type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/proposal/type/f3e9fac4-7fe6-416d-a5c3-6914a433e0c7",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"type",
+								"f3e9fac4-7fe6-416d-a5c3-6914a433e0c7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create proposal type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Another Test\",\n    \"slug\": \"another_test\",\n    \"description\": \"Test description\",\n    \"display_order\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/proposal/type",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"type"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update proposal type",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test1\",\n    \"slug\": \"test1\",\n    \"display_order\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/proposal/type/f3e9fac4-7fe6-416d-a5c3-6914a433e0c7",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"type",
+								"f3e9fac4-7fe6-416d-a5c3-6914a433e0c7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Activity",
+			"item": [
+				{
+					"name": "Get all activities",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/proposal/activity",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"activity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete activity",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/proposal/activity/3d2ebd8f-843b-4a4e-b158-8b7da4beac40",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"activity",
+								"3d2ebd8f-843b-4a4e-b158-8b7da4beac40"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create activity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"proposal_type_id\": \"9a80f057-a0f4-4ae0-ada7-63b25a6162e4\",\n    \"name\": \"Thanh toán nghiệp vụ chuyên môn Mở chương trình, điều chỉnh chương trình, khảo sát\",\n    \"slug\": \"thanh-toan-nghiep-vu-chuyen-mon-1\",\n    \"description\": \"Thanh toán nghiệp vụ chuyên môn Mở chương trình, điều chỉnh chương trình, khảo sát\",\n    \"display_order\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/proposal/activity",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"activity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update activity",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Thanh toán nghiệp vụ chuyên môn Giảng dạy\",\n    \"slug\": \"thanh-toan-nghiep-vu-chuyen-mon-2\",\n    \"description\": \"Thanh toán nghiệp vụ chuyên môn Giảng dạy\",\n    \"display_order\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/proposal/activity/2da8b650-cad4-4b63-bf83-56ca4aadaa2c",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"activity",
+								"2da8b650-cad4-4b63-bf83-56ca4aadaa2c"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get activity",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/proposal/activity/db8c70f8-af9e-438f-a39c-23cfeed596a2",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"activity",
+								"db8c70f8-af9e-438f-a39c-23cfeed596a2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Document Template",
+			"item": [
+				{
+					"name": "Get all document templates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/proposal/template",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"template"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update document template",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"is_required\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/proposal/template/fc348cb7-006e-4dee-9255-1789e871007e",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"template",
+								"fc348cb7-006e-4dee-9255-1789e871007e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete document template",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test name\",\n    \"quantity\": 1,\n    \"display_order\": 0,\n    \"is_required\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/proposal/template/ce42d33f-7c2c-4e1d-a161-d72677ff96d5",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"template",
+								"ce42d33f-7c2c-4e1d-a161-d72677ff96d5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create document template",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "activity_id",
+									"value": "14ed592b-1444-4130-8f79-562f2f14e1f4",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Giấy đề nghị thanh toán",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "display_order",
+									"value": "0",
+									"type": "text"
+								},
+								{
+									"key": "is_required",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/planhorror/Downloads/E_Service2/9. Quyết toán chi phí tổ chức Hội nghị/7. Giấy đề nghị thanh toán.docx"
+								}
+							],
+							"options": {
+								"formdata": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/proposal/template",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"template"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get document template",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/proposal/template/as",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"template",
+								"as"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Proposal",
+			"item": [
+				{
+					"name": "Get all proposal",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/proposal/all",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update document template",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Test name",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "display_order",
+									"value": "0",
+									"type": "text"
+								},
+								{
+									"key": "is_required",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/media/planhorror/My Data/DumpStack.log.tmp"
+								}
+							],
+							"options": {
+								"formdata": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/proposal/template/37c31c00-5996-4f39-bea7-0823d3493fcc",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"template",
+								"37c31c00-5996-4f39-bea7-0823d3493fcc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete document template",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test name\",\n    \"quantity\": 1,\n    \"display_order\": 0,\n    \"is_required\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/proposal/template/ce42d33f-7c2c-4e1d-a161-d72677ff96d5",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"template",
+								"ce42d33f-7c2c-4e1d-a161-d72677ff96d5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create document template",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/media/planhorror/My Data/Case2.docx"
+								}
+							],
+							"options": {
+								"formdata": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/proposal",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get proposal",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/proposal/find/a",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"proposal",
+								"find",
+								"a"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"a@gmail.com\",\n    \"username\": \"a\",\n    \"password\": \"a\",\n    \"confirmPassword\": \"a\",\n    \"role\": \"ADMINA\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/register",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"a\",\n    \"password\": \"a\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Review",
+			"item": [
+				{
+					"name": "All review",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/review",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create review",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlODFkMWJmLTI0NGItNDM5Ny1hOTA3LWI0ZDg4Yjk4NTQ0MSIsImVtYWlsIjoiYUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImEiLCJwYXNzd29yZCI6IiQyYiQxMCR1YTEvVTgvZzc2Q25kZy9JZFRvMlZPZDJPdzFBL3ZrZkNGejY4ckU3VlJBa095bzZ0bHBGRyIsImZ1bGxfbmFtZSI6bnVsbCwicGhvbmUiOm51bGwsImFkZHJlc3MiOm51bGwsInJvbGUiOiJBRE1JTiIsImlzX2FjdGl2ZSI6dHJ1ZSwiY3JlYXRlZF9hdCI6IjIwMjUtMDgtMjJUMDI6MDI6MzUuNDA3WiIsInVwZGF0ZWRfYXQiOiIyMDI1LTA4LTIyVDAyOjAyOjM1LjQwN1oiLCJpYXQiOjE3NTU4MjgxNTV9.UGgoOr5tpSlE83DIqTe90-SmsqUVaUAIw8nkqdNEDCM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"proposal_id\": \"1c6bd7fc-04e8-4f20-8013-19267c8d8840\",\n    \"accepted\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/review/send",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"review",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update review",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlODFkMWJmLTI0NGItNDM5Ny1hOTA3LWI0ZDg4Yjk4NTQ0MSIsImVtYWlsIjoiYUBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImEiLCJwYXNzd29yZCI6IiQyYiQxMCR1YTEvVTgvZzc2Q25kZy9JZFRvMlZPZDJPdzFBL3ZrZkNGejY4ckU3VlJBa095bzZ0bHBGRyIsImZ1bGxfbmFtZSI6bnVsbCwicGhvbmUiOm51bGwsImFkZHJlc3MiOm51bGwsInJvbGUiOiJBRE1JTiIsImlzX2FjdGl2ZSI6dHJ1ZSwiY3JlYXRlZF9hdCI6IjIwMjUtMDgtMjJUMDI6MDI6MzUuNDA3WiIsInVwZGF0ZWRfYXQiOiIyMDI1LTA4LTIyVDAyOjAyOjM1LjQwN1oiLCJpYXQiOjE3NTU4MjgxNTV9.UGgoOr5tpSlE83DIqTe90-SmsqUVaUAIw8nkqdNEDCM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accepted\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/review/update/63eacf81-486a-4c68-9c49-963fd5681159",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"review",
+								"update",
+								"63eacf81-486a-4c68-9c49-963fd5681159"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account",
+			"item": [
+				{
+					"name": "Get all accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/account",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"account"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get account by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/account/de81d1bf-244b-4397-a907-b4d88b985441",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"account",
+								"de81d1bf-244b-4397-a907-b4d88b985441"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"b@gmail.com\",\n    \"username\": \"b\",\n    \"password\": \"a\",\n    \"confirmPassword\": \"a\",\n    \"role\": \"ADMIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/account",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"account"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update account",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"b@gmail.com\",\n    \"username\": \"b\",\n    \"password\": \"a\",\n    \"full_name\": \"Test\",\n    \"role\": \"ADMIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/account/18114576-3b60-4509-9191-f473e13aa42e",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"account",
+								"18114576-3b60-4509-9191-f473e13aa42e"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
