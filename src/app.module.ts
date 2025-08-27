@@ -12,6 +12,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { DocumentModule } from './proposal/document/document.module';
 import { ReviewModule } from './proposal/review/review.module';
 import { ConfigModule } from '@nestjs/config';
+import { AttachmentsModule } from './attachments/attachments.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
     }),
     ScheduleModule.forRoot(),
+    AttachmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
