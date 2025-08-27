@@ -10,6 +10,7 @@ import { ProposalCreateDto } from './dto/proposal-create.dto';
 import { ActivityService } from './activity/activity.service';
 import { Proposal } from '@prisma/client';
 import { generateCode, generateSecurityCode, ProposalCreate } from '../common';
+import { ProposalQueryDto } from './dto/proposal-query.dto';
 
 @Injectable()
 export class ProposalService {
@@ -71,11 +72,11 @@ export class ProposalService {
     }
   }
 
-  async findProposalsByCodeService(security_code: string, code: string) {
+  async findProposalsByCodeService(query: ProposalQueryDto) {
     const proposals = await this.prisma.proposal.findUnique({
       where: {
-        security_code,
-        code,
+        security_code: query.security_code,
+        code: query.code,
       },
     });
     if (!proposals) {

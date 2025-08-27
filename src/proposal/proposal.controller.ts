@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -15,6 +16,7 @@ import {
   AnyFilesInterceptor,
   FilesInterceptor,
 } from '@nestjs/platform-express';
+import { ProposalQueryDto } from './dto/proposal-query.dto';
 
 @Controller('proposal')
 export class ProposalController {
@@ -28,6 +30,11 @@ export class ProposalController {
   @Get('find/:id')
   async getProposalById(@Param('id') id: string) {
     return this.proposalService.getProposalById(id);
+  }
+
+  @Get('find')
+  async findProposalsByCode(@Body() query: ProposalQueryDto) {
+    return this.proposalService.findProposalsByCodeService(query);
   }
 
   @Post('send')
@@ -46,5 +53,10 @@ export class ProposalController {
   ) {
     return this.proposalService.createProposalService(data, files);
     // console.log(files);
+  }
+
+  @Delete(':id')
+  async deleteProposal(@Param('id') id: string) {
+    return this.proposalService.deleteProposal(id);
   }
 }
