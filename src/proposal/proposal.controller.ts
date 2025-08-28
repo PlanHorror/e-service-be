@@ -32,7 +32,7 @@ export class ProposalController {
     return this.proposalService.getProposalById(id);
   }
 
-  @Get('find')
+  @Post('find')
   async findProposalsByCode(@Body() query: ProposalQueryDto) {
     return this.proposalService.findProposalsByCodeService(query);
   }
