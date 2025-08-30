@@ -13,6 +13,7 @@ import { DocumentModule } from './proposal/document/document.module';
 import { ReviewModule } from './proposal/review/review.module';
 import { ConfigModule } from '@nestjs/config';
 import { AttachmentsModule } from './attachments/attachments.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AttachmentsModule } from './attachments/attachments.module';
     }),
     ScheduleModule.forRoot(),
     AttachmentsModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

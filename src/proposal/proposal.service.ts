@@ -11,6 +11,7 @@ import { ActivityService } from './activity/activity.service';
 import { Proposal, ProposalStatus } from '@prisma/client';
 import { generateCode, generateSecurityCode, ProposalCreate } from '../common';
 import { ProposalQueryDto } from './dto/proposal-query.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class ProposalService {
@@ -18,6 +19,7 @@ export class ProposalService {
     private readonly prisma: PrismaService,
     private readonly documentService: DocumentService,
     private readonly activityService: ActivityService,
+    private readonly mailService: MailService,
   ) {}
 
   async getAllProposals() {
@@ -137,6 +139,8 @@ export class ProposalService {
       activity.documentTemplates,
       files,
     );
+    await this.mailService.sendProposalCreationConfirmation(proposal);
+    await this.mailService.sendManagerNotification(proposal);
     return {
       proposal,
       documents,

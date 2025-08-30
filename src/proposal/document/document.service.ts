@@ -96,6 +96,7 @@ export class DocumentService {
         data: documents,
       });
     } catch (error) {
+      console.error(error);
       throw new InternalServerErrorException('Error creating documents');
     }
   }
