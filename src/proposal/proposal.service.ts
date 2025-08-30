@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma.service';
 import { DocumentService } from './document/document.service';
 import { ProposalCreateDto } from './dto/proposal-create.dto';
 import { ActivityService } from './activity/activity.service';
-import { Proposal } from '@prisma/client';
+import { Proposal, ProposalStatus } from '@prisma/client';
 import { generateCode, generateSecurityCode, ProposalCreate } from '../common';
 import { ProposalQueryDto } from './dto/proposal-query.dto';
 
@@ -78,6 +78,13 @@ export class ProposalService {
         security_code: query.security_code,
         code: query.code,
       },
+      include: {
+        activity: {
+          include: {
+            proposalType: true,
+          },
+        },
+      },
     });
     if (!proposals) {
       throw new NotFoundException('Proposals not found');
@@ -134,5 +141,59 @@ export class ProposalService {
       proposal,
       documents,
     };
+  }
+
+  async getProposalService(status: string, from: number, to: number) {
+    if (status) {
+      let statusEnum: ProposalStatus;
+      switch (status) {
+        case 'PENDING':
+          statusEnum = ProposalStatus.PENDING;
+          break;
+        case 'AIAPPROVED':
+          statusEnum = ProposalStatus.AIAPPROVED;
+          break;
+        case 'MANAGER_APPROVED':
+          statusEnum = ProposalStatus.MANAGERAPPROVED;
+          break;
+        case 'REJECTED':
+          statusEnum = ProposalStatus.REJECTED;
+          break;
+        default:
+          throw new BadRequestException('Invalid status');
+      }
+      return this.prisma.proposal.findMany({
+        where: { status: statusEnum },
+        take: to,
+        include: {
+          activity: {
+            include: {
+              proposalType: true,
+            },
+          },
+          documents: true,
+        },
+        skip: from,
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+    }
+
+    return this.prisma.proposal.findMany({
+      take: to,
+      include: {
+        activity: {
+          include: {
+            proposalType: true,
+          },
+        },
+        documents: true,
+      },
+      skip: from,
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
   }
 }

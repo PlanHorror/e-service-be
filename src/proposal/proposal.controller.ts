@@ -7,6 +7,7 @@ import {
   Param,
   ParseFilePipeBuilder,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -16,15 +17,22 @@ import {
   AnyFilesInterceptor,
   FilesInterceptor,
 } from '@nestjs/platform-express';
-import { ProposalQueryDto } from './dto/proposal-query.dto';
+import {
+  ProposalAllQueryDto,
+  ProposalQueryDto,
+} from './dto/proposal-query.dto';
 
 @Controller('proposal')
 export class ProposalController {
   constructor(private readonly proposalService: ProposalService) {}
 
   @Get('all')
-  async getAllProposals() {
-    return this.proposalService.getAllProposals();
+  async getAllProposals(@Query() query: ProposalAllQueryDto) {
+    return this.proposalService.getProposalService(
+      query.status,
+      query.from,
+      query.to,
+    );
   }
 
   @Get('find/:id')
