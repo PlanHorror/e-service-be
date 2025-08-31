@@ -28,29 +28,43 @@ export class ProposalQueryDto {
 
 export class ProposalAllQueryDto {
   @ApiProperty({
-    description: 'Pagination start index',
-    example: 0,
+    description: 'Page number (starting from 1)',
+    example: 1,
+    default: 1,
   })
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  @IsNotEmpty()
-  from: number;
+  @IsOptional()
+  page?: number = 1;
 
   @ApiProperty({
-    description: 'Pagination end index',
+    description: 'Number of items per page',
     example: 10,
+    default: 10,
   })
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  @IsNotEmpty()
-  to: number;
+  @IsOptional()
+  limit?: number = 10;
 
   @ApiProperty({
-    description: 'Proposal status',
+    description: 'Sorting order for created_at',
+    example: 'desc',
+    enum: ['asc', 'desc'],
+    required: false,
+    default: 'desc',
+  })
+  @IsEnum(['asc', 'desc'])
+  @IsOptional()
+  order?: 'asc' | 'desc' = 'desc';
+
+  @ApiProperty({
+    description: 'Proposal status filter',
     example: 'PENDING',
+    enum: ['PENDING', 'AIAPPROVED', 'MANAGERAPPROVED', 'REJECTED'],
     required: false,
   })
   @IsEnum(['PENDING', 'AIAPPROVED', 'MANAGERAPPROVED', 'REJECTED'])
   @IsOptional()
-  status: string;
+  status?: string;
 }

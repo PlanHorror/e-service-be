@@ -147,45 +147,25 @@ export class ProposalService {
     };
   }
 
-  async getProposalService(status: string, from: number, to: number) {
-    if (status) {
-      let statusEnum: ProposalStatus;
-      switch (status) {
-        case 'PENDING':
-          statusEnum = ProposalStatus.PENDING;
-          break;
-        case 'AIAPPROVED':
-          statusEnum = ProposalStatus.AIAPPROVED;
-          break;
-        case 'MANAGERAPPROVED':
-          statusEnum = ProposalStatus.MANAGERAPPROVED;
-          break;
-        case 'REJECTED':
-          statusEnum = ProposalStatus.REJECTED;
-          break;
-        default:
-          throw new BadRequestException('Invalid status');
-      }
-      return this.prisma.proposal.findMany({
-        where: { status: statusEnum },
-        take: to,
-        include: {
-          activity: {
-            include: {
-              proposalType: true,
-            },
-          },
-          documents: true,
-        },
-        skip: from,
-        orderBy: {
-          created_at: 'desc',
-        },
-      });
-    }
+  async getProposalService(
+    page: number = 1,
+    limit: number = 10,
+    order: 'asc' | 'desc' = 'desc',
+    status?: string,
+  ) {
+    const skip = (page - 1) * limit;
+    const take = limit;
 
-    return this.prisma.proposal.findMany({
-      take: to,
+    const whereClause = status
+      ? {
+          status: this.mapStatusToEnum(status),
+        }
+      : {};
+
+    const data = await this.prisma.proposal.findMany({
+      where: whereClause,
+      take,
+      skip,
       include: {
         activity: {
           include: {
@@ -194,10 +174,38 @@ export class ProposalService {
         },
         documents: true,
       },
-      skip: from,
       orderBy: {
-        created_at: 'desc',
+        created_at: order,
       },
     });
+
+    let total: number | undefined;
+    if (page === 1) {  // Chỉ đếm total ở trang đầu
+      total = await this.prisma.proposal.count({
+        where: whereClause,
+      });
+    }
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
+  }
+  
+  private mapStatusToEnum(status: string): ProposalStatus {
+    switch (status) {
+      case 'PENDING':
+        return ProposalStatus.PENDING;
+      case 'AIAPPROVED':
+        return ProposalStatus.AIAPPROVED;
+      case 'MANAGERAPPROVED':
+        return ProposalStatus.MANAGERAPPROVED;
+      case 'REJECTED':
+        return ProposalStatus.REJECTED;
+      default:
+        throw new BadRequestException('Invalid status');
+    }
   }
 }

@@ -29,9 +29,10 @@ export class ProposalController {
   @Get('all')
   async getAllProposals(@Query() query: ProposalAllQueryDto) {
     return this.proposalService.getProposalService(
+      query.page,
+      query.limit,
+      query.order,
       query.status,
-      query.from,
-      query.to,
     );
   }
 
