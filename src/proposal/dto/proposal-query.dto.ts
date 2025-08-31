@@ -50,7 +50,7 @@ export class ProposalAllQueryDto {
     example: 'PENDING',
     required: false,
   })
-  @IsEnum(['PENDING', 'AIAPPROVED', 'MANAGER_APPROVED', 'REJECTED'])
+  @IsEnum(['PENDING', 'AIAPPROVED', 'MANAGERAPPROVED', 'REJECTED'])
   @IsOptional()
   status: string;
 }

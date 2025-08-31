@@ -157,7 +157,7 @@ export class ProposalService {
         case 'AIAPPROVED':
           statusEnum = ProposalStatus.AIAPPROVED;
           break;
-        case 'MANAGER_APPROVED':
+        case 'MANAGERAPPROVED':
           statusEnum = ProposalStatus.MANAGERAPPROVED;
           break;
         case 'REJECTED':
