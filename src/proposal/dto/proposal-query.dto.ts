@@ -48,6 +48,7 @@ export class ProposalAllQueryDto {
   @ApiProperty({
     description: 'Proposal status',
     example: 'PENDING',
+    required: false,
   })
   @IsEnum(['PENDING', 'AIAPPROVED', 'MANAGER_APPROVED', 'REJECTED'])
   @IsOptional()
