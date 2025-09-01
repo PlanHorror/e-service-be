@@ -83,12 +83,17 @@ export class AccountService {
   }
 
   async updateAccountService(id: string, data: UpdateUserDto) {
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(data.password, salt);
-    return this.updateAccount(id, {
-      ...data,
-      password: hashedPassword,
-    });
+    let updateData: Partial<User> = { ...data };
+    if (data.password) {
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(data.password, salt);
+      updateData.password = hashedPassword;
+    } else {
+      // Loại bỏ password khỏi updateData nếu không có
+      delete updateData.password;
+    }
+
+    return this.updateAccount(id, updateData);
   }
 
   async verifyAccount(data: LoginDto) {
