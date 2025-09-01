@@ -75,7 +75,8 @@ export class ProposalService {
   }
 
   async findProposalsByCodeService(query: ProposalQueryDto) {
-    const proposals = await this.prisma.proposal.findUnique({
+    // Query proposal trước để check status
+    const proposal = await this.prisma.proposal.findUnique({
       where: {
         security_code: query.security_code,
         code: query.code,
@@ -88,10 +89,48 @@ export class ProposalService {
         },
       },
     });
-    if (!proposals) {
-      throw new NotFoundException('Proposals not found');
+
+    if (!proposal) {
+      throw new NotFoundException('Proposal not found');
     }
-    return proposals;
+
+    // Nếu status là REJECTED, query lại với proposalReviews (chỉ select fields an toàn)
+    if (proposal.status === ProposalStatus.REJECTED) {
+      const proposalWithReviews = await this.prisma.proposal.findUnique({
+        where: {
+          security_code: query.security_code,
+          code: query.code,
+        },
+        include: {
+          activity: {
+            include: {
+              proposalType: true,
+            },
+          },
+          proposalReviews: {
+            select: {
+              id: true,
+              comments: true,
+              accepted: true,
+              created_at: true,
+              reviewer: {
+                select: {
+                  id: true,
+                  email: true,
+                  username: true,
+                  full_name: true,
+                  role: true,
+                  // Bỏ password và các fields nhạy cảm
+                },
+              },
+            },
+          },
+        },
+      });
+      return proposalWithReviews;
+    }
+
+    return proposal;
   }
 
   async createProposalService(
