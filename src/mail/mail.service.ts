@@ -34,7 +34,7 @@ export class MailService {
 
             <!-- Header -->
             <header style="background-color: #9E0612; color: white; padding: 20px; text-align: center;">
-              <img src="https://upload.wikimedia.org/wikipedia/vi/a/a0/Logo_vju.svg" alt="Logo VJU" style="height: 60px; margin-bottom: 10px;">
+              <img src="https://i.ibb.co/gbDtpfV8/android-chrome-512x512.png" alt="Logo VJU" style="height: 60px; margin-bottom: 10px;">
               <h1 style="margin: 0; font-size: 20px; font-weight: 600;">CỔNG DỊCH VỤ CÔNG TRƯỜNG ĐẠI HỌC VIỆT NHẬT</h1>
               <p style="margin: 5px 0 0; font-size: 13px; opacity: 0.9;">Kết nối, cung cấp thông tin và dịch vụ công mọi lúc, mọi nơi</p>
             </header>
@@ -115,7 +115,7 @@ export class MailService {
 
             <!-- Header -->
             <header style="background-color: #9E0612; color: white; padding: 20px; text-align: center;">
-              <img src="https://upload.wikimedia.org/wikipedia/vi/a/a0/Logo_vju.svg" alt="Logo VJU" style="height: 60px; margin-bottom: 10px;">
+              <img src="https://i.ibb.co/gbDtpfV8/android-chrome-512x512.png" alt="Logo VJU" style="height: 60px; margin-bottom: 10px;">
               <h1 style="margin: 0; font-size: 20px; font-weight: 600;">CỔNG DỊCH VỤ CÔNG TRƯỜNG ĐẠI HỌC VIỆT NHẬT</h1>
               <p style="margin: 5px 0 0; font-size: 13px; opacity: 0.9;">Kết nối, cung cấp thông tin và dịch vụ công mọi lúc, mọi nơi</p>
             </header>
@@ -204,7 +204,7 @@ export class MailService {
 
             <!-- Header -->
             <header style="background-color: #9E0612; color: white; padding: 20px; text-align: center;">
-              <img src="https://upload.wikimedia.org/wikipedia/vi/a/a0/Logo_vju.svg" alt="Logo VJU" style="height: 60px; margin-bottom: 10px;">
+              <img src="https://i.ibb.co/gbDtpfV8/android-chrome-512x512.png" alt="Logo VJU" style="height: 60px; margin-bottom: 10px;">
               <h1 style="margin: 0; font-size: 20px; font-weight: 600;">CỔNG DỊCH VỤ CÔNG TRƯỜNG ĐẠI HỌC VIỆT NHẬT</h1>
               <p style="margin: 5px 0 0; font-size: 13px; opacity: 0.9;">Kết nối, cung cấp thông tin và dịch vụ công mọi lúc, mọi nơi</p>
             </header>
