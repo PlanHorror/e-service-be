@@ -82,7 +82,7 @@ export class ProposalService {
         code: query.code,
       },
       include: {
-        activity: {
+        activity: { 
           include: {
             proposalType: true,
           },

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { Proposal } from '@prisma/client';
+import { Proposal,ProposalReview } from '@prisma/client';
 
 @Injectable()
 export class MailService {
@@ -182,4 +182,86 @@ export class MailService {
       throw error;
     }
   }
+  async sendReviewNotification(proposal: Proposal, review: ProposalReview): Promise<void> {
+    const statusText = review.accepted ? 'Đã được phê duyệt' : 'Đã bị từ chối';
+    const statusColor = review.accepted ? '#28a745' : '#dc3545';
+    const subject = review.accepted ? 'Đề Nghị Đã Được Phê Duyệt - VJU E-Service' : 'Đề Nghị Đã Bị Từ Chối - VJU E-Service';
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: proposal.email,
+      subject,
+      html: `
+        <!DOCTYPE html>
+        <html lang="vi">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Thông Báo Review</title>
+        </head>
+        <body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 0;">
+          <div style="max-width: 650px; margin: 30px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.08);">
+
+            <!-- Header -->
+            <header style="background-color: #9E0612; color: white; padding: 20px; text-align: center;">
+              <img src="https://upload.wikimedia.org/wikipedia/vi/a/a0/Logo_vju.svg" alt="Logo VJU" style="height: 60px; margin-bottom: 10px;">
+              <h1 style="margin: 0; font-size: 20px; font-weight: 600;">CỔNG DỊCH VỤ CÔNG TRƯỜNG ĐẠI HỌC VIỆT NHẬT</h1>
+              <p style="margin: 5px 0 0; font-size: 13px; opacity: 0.9;">Kết nối, cung cấp thông tin và dịch vụ công mọi lúc, mọi nơi</p>
+            </header>
+            
+            <!-- Main Content -->
+            <main style="padding: 25px;">
+              <h2 style="color: ${statusColor}; margin-top: 0; font-size: 18px;">📄 Đề nghị của bạn ${statusText}</h2>
+              
+              <p style="font-size: 15px; color: #334155;">Kính gửi <strong>${proposal.full_name}</strong>,</p>
+              <p style="font-size: 15px; color: #334155;">
+                Đề nghị của bạn đã được xem xét. Thông tin chi tiết như sau:
+              </p>
+
+              <!-- Proposal Info Box -->
+              <div style="background-color: #f9fafb; padding: 18px; border-radius: 6px; margin: 20px 0; border: 1px solid #e2e8f0;">
+                <p style="margin: 6px 0; color: #475569;"><strong>Mã đề nghị:</strong> ${proposal.code}</p>
+                <p style="margin: 6px 0; color: #475569;"><strong>Mã bảo mật:</strong> ${proposal.security_code}</p>
+                <p style="margin: 6px 0; color: #475569;"><strong>Họ và tên:</strong> ${proposal.full_name}</p>
+                <p style="margin: 6px 0; color: #475569;"><strong>Email:</strong> ${proposal.email}</p>
+                <p style="margin: 6px 0; color: #475569;"><strong>Số điện thoại:</strong> ${proposal.phone}</p>
+                <p style="margin: 6px 0; color: #475569;"><strong>Địa chỉ:</strong> ${proposal.address}</p>
+                ${proposal.note ? `<p style="margin: 6px 0; color: #475569;"><strong>Ghi chú:</strong> ${proposal.note}</p>` : ''}
+                <p style="margin: 6px 0; color: #475569;"><strong>Trạng thái:</strong> <span style="color: ${statusColor}; font-weight: bold;">${statusText}</span></p>
+                <p style="margin: 6px 0; color: #475569;"><strong>Ngày tạo:</strong> ${proposal.created_at.toLocaleDateString('vi-VN')}</p>
+                ${review.comments ? `<p style="margin: 6px 0; color: #475569;"><strong>Ghi chú từ reviewer:</strong> ${review.comments}</p>` : ''}
+              </div>
+
+              <!-- Alert Box -->
+              <div style="background: ${review.accepted ? '#d4edda' : '#f8d7da'}; padding: 15px; border-radius: 6px; border-left: 4px solid ${statusColor}; margin-bottom: 20px;">
+                <p style="margin: 0; font-size: 14px; color: ${review.accepted ? '#155724' : '#721c24'};">
+                  <strong>${review.accepted ? 'Chúc mừng!' : 'Lưu ý:'}</strong> ${review.accepted ? 'Đề nghị của bạn đã được phê duyệt. Bạn sẽ nhận thêm hướng dẫn nếu cần.' : 'Đề nghị của bạn đã bị từ chối. Vui lòng kiểm tra ghi chú và gửi lại nếu cần.'}
+                </p>
+              </div>
+              
+              <p style="font-size: 15px; color: #334155;">Xin cảm ơn bạn đã sử dụng dịch vụ!</p>
+            </main>
+
+            <!-- Footer -->
+            <footer style="background-color: #f8f9fa; padding: 15px; text-align: center; border-top: 1px solid #e2e8f0;">
+              <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                Đây là email tự động, vui lòng không trả lời.<br>
+                Mọi thắc mắc vui lòng liên hệ <a href="mailto:support@vju.edu.vn" style="color: #9E0612; text-decoration: none;">support@vju.edu.vn</a>.
+              </p>
+            </footer>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log(`Review notification sent to ${proposal.email}`);
+    } catch (error) {
+      console.error('Error sending review notification:', error);
+      throw error;
+    }
+  }
 }
+

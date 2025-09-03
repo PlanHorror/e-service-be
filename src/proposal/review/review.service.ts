@@ -12,12 +12,14 @@ import { ProposalReview, ProposalStatus, User } from '@prisma/client';
 import { Review } from '../../common';
 import { ProposalService } from '../proposal.service';
 import { ReviewUpdateDto } from './dto/review-update.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class ReviewService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly proposalService: ProposalService,
+    private readonly mailService: MailService,
   ) {}
 
   async getAllReview() {
@@ -97,18 +99,26 @@ export class ReviewService {
         'Cannot create review for rejected or manager-approved proposals',
       );
     }
-    this.proposalService.updateProposal(proposal.id, {
+    // Cập nhật status proposal
+    await this.proposalService.updateProposal(proposal.id, {
       status: data.accepted
         ? ProposalStatus.MANAGERAPPROVED
         : ProposalStatus.REJECTED,
     });
-    // Create the review
-    return this.createReview({
+    // Set status mới trực tiếp vào object (tốt hơn: tránh query thừa)
+    proposal.status = data.accepted
+      ? ProposalStatus.MANAGERAPPROVED
+      : ProposalStatus.REJECTED;
+    // Tạo review
+    const review = await this.createReview({
       proposal_id: data.proposal_id,
       reviewer_id: user.id,
       comments: data.comments,
       accepted: data.accepted,
     });
+    // Gửi email thông báo cho user
+    await this.mailService.sendReviewNotification(proposal, review);
+    return proposal;
   }
 
   async updateReviewService(id: string, data: ReviewUpdateDto, user: User) {
