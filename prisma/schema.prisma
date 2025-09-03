@@ -144,3 +144,25 @@ model ProposalReview {
 
   @@unique([proposal_id, reviewer_id])
 }
+
+enum FeedbackCategory {
+  DICHVUCONG
+  COSOVATCHAT
+  GIAODUCDAOTAO
+  HANHCHINH
+  KHAC
+}
+
+model Feedback {
+  id          String   @id @default(uuid())
+  hoTen       String
+  email       String
+  soDienThoai String
+  diaChi      String
+  danhMuc     FeedbackCategory
+  tieuDe      String
+  noiDung     String
+  ghiChu      String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}

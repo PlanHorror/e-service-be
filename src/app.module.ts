@@ -14,6 +14,7 @@ import { ReviewModule } from './proposal/review/review.module';
 import { ConfigModule } from '@nestjs/config';
 import { AttachmentsModule } from './attachments/attachments.module';
 import { MailModule } from './mail/mail.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MailModule } from './mail/mail.module';
     ScheduleModule.forRoot(),
     AttachmentsModule,
     MailModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],
