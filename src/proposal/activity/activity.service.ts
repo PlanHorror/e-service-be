@@ -1,13 +1,19 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
-import { ActivityCreateDto } from './dto/activity-create.dto';
+import {
+  ActivityCreateDto,
+  ActivityTemplateCreateDto,
+} from './dto/activity-create.dto';
 import { ProposalTypeService } from '../proposal-type/proposal-type.service';
 import { ActivityUpdateDto } from './dto/activity-update.dto';
+import { Prisma } from '@prisma/client';
+import { generateUniqueFileName, saveFile } from 'src/common';
 
 @Injectable()
 export class ActivityService {
@@ -74,6 +80,56 @@ export class ActivityService {
       return await this.prisma.activities.delete({ where: { id } });
     } catch (error) {
       throw new InternalServerErrorException('Error deleting activity');
+    }
+  }
+
+  async createActivityTemplate(
+    data: ActivityTemplateCreateDto,
+    files: Express.Multer.File[],
+  ) {
+    const { documentTemplates, ...activityData } = data;
+    await this.proposalTypeService.getProposalTypeById(data.proposalType_id);
+    try {
+      const activity = await this.prisma.activities.create({
+        data: activityData,
+      });
+      if (documentTemplates.length !== files.length) {
+        throw new BadRequestException(
+          'Mismatch between document templates and files',
+        );
+      }
+      const documentTemplatesData: Prisma.DocumentTemplateCreateManyInput[] =
+        [];
+      if (documentTemplates && documentTemplates.length > 0 && files) {
+        documentTemplates.forEach((template, index) => {
+          const file = files.find(
+            (f) => f.fieldname === `documentTemplates[${index}][file]`,
+          );
+          if (!file) {
+            throw new BadRequestException(
+              `File for document template ${template.name} is missing`,
+            );
+          }
+          const path = generateUniqueFileName(file);
+          saveFile(file, path);
+          documentTemplatesData.push({
+            quantity: template.quantity,
+            is_required: template.is_required,
+            name: template.name,
+            path,
+            activity_id: activity.id,
+          });
+        });
+        await this.prisma.documentTemplate.createMany({
+          data: documentTemplatesData,
+        });
+      }
+      return activity;
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException(
+        'Error creating activity template',
+      );
     }
   }
 }

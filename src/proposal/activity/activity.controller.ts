@@ -10,13 +10,21 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Patch,
   Post,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ActivityService } from './activity.service';
 import { ActivityUpdateDto } from './dto/activity-update.dto';
-import { ActivityCreateDto } from './dto/activity-create.dto';
+import {
+  ActivityCreateDto,
+  ActivityTemplateCreateDto,
+} from './dto/activity-create.dto';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Activities')
 @Controller('proposal/activity')
@@ -49,6 +57,24 @@ export class ActivityController {
   @Post()
   async createActivity(@Body() data: ActivityCreateDto) {
     return this.activityService.createActivity(data);
+  }
+
+  @Post('templates')
+  @UseInterceptors(AnyFilesInterceptor())
+  async createActivityTemplate(
+    @Body() data: ActivityTemplateCreateDto,
+    @UploadedFiles(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({ maxSize: 10 * 1024 * 1024 })
+        .build({
+          fileIsRequired: false,
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    files: Array<Express.Multer.File>,
+  ) {
+    return this.activityService.createActivityTemplate(data, files);
+    // console.log(data, files);
   }
 
   @ApiOperation({ summary: 'Update an activity' })
