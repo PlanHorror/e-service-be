@@ -1,0 +1,114 @@
+import axios from "axios";
+import dotenv from "dotenv";
+import fs from "fs";
+dotenv.config();
+
+const api = process.env.URL || "http://localhost:3001";
+
+async function createProposal() {
+  const data = {
+    activity_id: "76ecac34-95cc-4dde-8669-8b75802ccf86",
+    full_name: "John Doe",
+    email: "nmtxma2004@gmail.com",
+    phone: "0971441212",
+    address: "123 Main St, Anytown, USA",
+
+    files: {
+      "3d98cf58-4359-4068-8a1e-5be25da9f568": [
+        fs.createReadStream("files/test.docx"),
+      ],
+    },
+  };
+
+  const response = await axios.post(`${api}/proposal/send`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  console.log(response.data);
+}
+
+async function createActivity() {
+  const data = {
+    proposalType_id: "9a80f057-a0f4-4ae0-ada7-63b25a6162e4",
+    name: "New Activitys",
+    slug: "new-activitys",
+    description: "This is a new activity.",
+    documentTemplates: [
+      {
+        name: "Template 1",
+        quantity: 2,
+        is_required: true,
+        file: fs.createReadStream("files/test.docx"),
+      },
+      {
+        name: "Template 1",
+        quantity: 2,
+        is_required: true,
+        file: fs.createReadStream("files/test.docx"),
+      },
+      {
+        name: "Template 1",
+        quantity: 2,
+        is_required: true,
+        file: fs.createReadStream("files/test.docx"),
+      },
+    ],
+  };
+
+  const response = await axios.post(
+    `${api}/proposal/activity/templates`,
+    data,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  console.log(response.data);
+}
+
+async function updateActivity() {
+  const data = {
+    name: "New Activity",
+    slug: "new-activity",
+    description: "This is a new activity.",
+    documentTemplates: [
+      {
+        name: "Template 1",
+        quantity: 2,
+        is_required: true,
+        file: fs.createReadStream("files/test.docx"),
+      },
+      {
+        id: "e6d4bdb8-d213-49b8-ba21-165d730d573a",
+        name: "Template 0",
+        quantity: 4,
+        is_required: true,
+        file: fs.createReadStream("package.json"),
+      },
+      {
+        id: "35da4dab-1ff3-4405-aa46-6faab70bdb42",
+        name: "Template update",
+        quantity: 2,
+        is_required: true,
+        file: fs.createReadStream("index.js"),
+      },
+    ],
+  };
+
+  const response = await axios.patch(
+    `${api}/proposal/activity/templates/d4953dec-6fbb-4c3f-bd2d-a8b487d02b9e`,
+    data,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  console.log(response.data);
+}
+
+await updateActivity();
+// await createActivity();
+// await createProposal();

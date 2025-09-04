@@ -19,7 +19,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ActivityService } from './activity.service';
-import { ActivityUpdateDto } from './dto/activity-update.dto';
+import {
+  ActivityTemplateUpdateDto,
+  ActivityUpdateDto,
+} from './dto/activity-update.dto';
 import {
   ActivityCreateDto,
   ActivityTemplateCreateDto,
@@ -128,6 +131,24 @@ export class ActivityController {
   ) {
     return this.activityService.createActivityTemplate(data, files);
     // console.log(data, files);
+  }
+
+  @Patch('templates/:id')
+  @UseInterceptors(AnyFilesInterceptor())
+  async updateActivityTemplate(
+    @Param('id') id: string,
+    @Body() data: ActivityTemplateUpdateDto,
+    @UploadedFiles(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({ maxSize: 10 * 1024 * 1024 })
+        .build({
+          fileIsRequired: false,
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    files: Array<Express.Multer.File>,
+  ) {
+    return this.activityService.updateActivityTemplate(id, data, files);
   }
 
   @ApiOperation({ summary: 'Update an activity' })
