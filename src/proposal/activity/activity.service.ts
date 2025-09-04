@@ -110,7 +110,7 @@ export class ActivityService {
               `File for document template ${template.name} is missing`,
             );
           }
-          const path = generateUniqueFileName(file);
+          const path = `attachments/${generateUniqueFileName(file)}`;
           saveFile(file, path);
           documentTemplatesData.push({
             quantity: template.quantity,
@@ -126,6 +126,9 @@ export class ActivityService {
       }
       return activity;
     } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Activity with this slug already exists');
+      }
       console.error(error);
       throw new InternalServerErrorException(
         'Error creating activity template',
