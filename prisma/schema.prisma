@@ -61,7 +61,7 @@ model ProposalTypes {
   name        String  
   slug       String   @unique
   description String?  
-  display_order Int      @default(0)
+  display_order Int?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
@@ -75,7 +75,7 @@ model Activities {
   name        String  
   slug       String   @unique
   description String?  
-  display_order Int      @default(0)
+  display_order Int?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
@@ -110,7 +110,7 @@ model DocumentTemplate {
   activity_id String
   name       String
   quantity   Int @default(1)
-  display_order Int @default(0)
+  display_order Int?
   is_required Boolean @default(false)
   path       String
   created_at DateTime @default(now())

@@ -30,12 +30,13 @@ export class ProposalTypeCreateDto {
     required: false,
   })
   @IsString()
-  @IsNotEmpty()
+  // @IsNotEmpty()
   @IsOptional()
   description: string;
 
-  @ApiProperty({ description: 'Display order', example: 1 })
+  @ApiProperty({ description: 'Display order', example: 1, required: false })
   @IsNumber()
-  @IsNotEmpty()
+  // @IsNotEmpty()
+  @IsOptional()
   display_order: number;
 }
