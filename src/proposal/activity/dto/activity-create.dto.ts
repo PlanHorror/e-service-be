@@ -8,8 +8,37 @@ import {
   IsString,
   IsUUID,
   ValidateNested,
+  IsArray,
 } from 'class-validator';
 import { DocumentTemplateCreateDto } from 'src/proposal/document-template/dto/document-template-create.dto';
+
+export class DocumentTemplateNestedCreateDto {
+  @ApiProperty({
+    description: 'Document template name',
+    example: 'Research Plan',
+  })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty({ description: 'Required quantity', example: 1 })
+  @IsNotEmpty()
+  @Transform(({ value }) => Number(value))
+  quantity: number;
+
+  @ApiProperty({ description: 'Display order', example: 1 })
+  @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  @Transform(({ value }) => Number(value))
+  display_order: number;
+
+  @ApiProperty({ description: 'Is this document required', example: true })
+  @IsBoolean()
+  @IsNotEmpty()
+  @Transform(({ value }) => Boolean(value))
+  is_required: boolean;
+}
 
 export class ActivityCreateDto {
   @ApiProperty({
@@ -53,17 +82,24 @@ export class ActivityTemplateCreateDto {
     description: 'Proposal type ID',
     type: String,
     format: 'uuid',
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID()
   @IsNotEmpty()
   proposalType_id: string;
 
-  @ApiProperty({ description: 'Activity name', example: 'Data Collection' })
+  @ApiProperty({
+    description: 'Activity name',
+    example: 'Data Collection',
+  })
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ description: 'URL-friendly slug', example: 'data-collection' })
+  @ApiProperty({
+    description: 'URL-friendly slug',
+    example: 'data-collection',
+  })
   @IsString()
   @IsNotEmpty()
   slug: string;
@@ -78,41 +114,21 @@ export class ActivityTemplateCreateDto {
   @IsOptional()
   description: string;
 
-  @ApiProperty({ description: 'Display order', example: 1, required: false })
+  @ApiProperty({
+    description: 'Display order',
+    example: 1,
+    required: false,
+  })
   @IsNumber()
   @IsNotEmpty()
   @IsOptional()
   display_order: number;
 
+  @ApiProperty({
+    description: 'List of document templates',
+    type: [DocumentTemplateNestedCreateDto],
+  })
   @ValidateNested({ each: true })
   @Type(() => DocumentTemplateNestedCreateDto)
   documentTemplates: DocumentTemplateNestedCreateDto[];
-}
-
-export class DocumentTemplateNestedCreateDto {
-  @ApiProperty({
-    description: 'Document template name',
-    example: 'Research Plan',
-  })
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @ApiProperty({ description: 'Required quantity', example: 1 })
-  @IsNotEmpty()
-  @Transform(({ value }) => Number(value))
-  quantity: number;
-
-  @ApiProperty({ description: 'Display order', example: 1 })
-  @IsOptional()
-  @IsNumber()
-  @IsNotEmpty()
-  @Transform(({ value }) => Number(value))
-  display_order: number;
-
-  @ApiProperty({ description: 'Is this document required', example: true })
-  @IsBoolean()
-  @IsNotEmpty()
-  @Transform(({ value }) => Boolean(value))
-  is_required: boolean;
 }

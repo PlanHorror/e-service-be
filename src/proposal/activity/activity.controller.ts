@@ -61,7 +61,53 @@ export class ActivityController {
 
   @Post('templates')
   @ApiOperation({ summary: 'Create a new activity template' })
-  @ApiBody({ type: ActivityTemplateCreateDto })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        proposalType_id: {
+          type: 'string',
+          format: 'uuid',
+          example: '123e4567-e89b-12d3-a456-426614174000',
+        },
+        name: {
+          type: 'string',
+          example: 'Data Collection',
+        },
+        slug: {
+          type: 'string',
+          example: 'data-collection',
+        },
+        description: {
+          type: 'string',
+          example: 'Collecting research data',
+        },
+        display_order: {
+          type: 'number',
+          example: 1,
+        },
+        documentTemplates: {
+          type: 'array',
+          example: [
+            {
+              name: 'Research Plan',
+              quantity: 1,
+              display_order: 1,
+              is_required: true,
+              file: 'Attachment file',
+            },
+            {
+              name: 'Data Form',
+              quantity: 2,
+              display_order: 2,
+              is_required: false,
+              file: 'Attachment file',
+            },
+          ],
+        },
+      },
+    },
+  })
   @ApiResponse({ status: 201, description: 'Activity template created.' })
   @ApiResponse({
     status: 409,
