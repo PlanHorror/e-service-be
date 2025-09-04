@@ -60,6 +60,13 @@ export class ActivityController {
   }
 
   @Post('templates')
+  @ApiOperation({ summary: 'Create a new activity template' })
+  @ApiBody({ type: ActivityTemplateCreateDto })
+  @ApiResponse({ status: 201, description: 'Activity template created.' })
+  @ApiResponse({
+    status: 409,
+    description: 'Activity with this slug already exists.',
+  })
   @UseInterceptors(AnyFilesInterceptor())
   async createActivityTemplate(
     @Body() data: ActivityTemplateCreateDto,
