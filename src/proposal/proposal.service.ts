@@ -30,6 +30,13 @@ export class ProposalService {
     try {
       const proposal = await this.prisma.proposal.findUnique({
         where: { id },
+        include: {
+          documents: {
+            include: {
+              document: true,
+            },
+          },
+        },
       });
       if (!proposal) {
         throw new NotFoundException('Proposal not found');
@@ -82,7 +89,7 @@ export class ProposalService {
         code: query.code,
       },
       include: {
-        activity: { 
+        activity: {
           include: {
             proposalType: true,
           },
@@ -228,7 +235,8 @@ export class ProposalService {
     });
 
     let total: number | undefined;
-    if (page === 1) {  // Chỉ đếm total ở trang đầu
+    if (page === 1) {
+      // Chỉ đếm total ở trang đầu
       total = await this.prisma.proposal.count({
         where: whereClause,
       });
@@ -241,7 +249,7 @@ export class ProposalService {
       limit,
     };
   }
-  
+
   private mapStatusToEnum(status: string): ProposalStatus {
     switch (status) {
       case 'PENDING':

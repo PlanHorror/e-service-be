@@ -115,6 +115,7 @@ model DocumentTemplate {
   quantity   Int @default(1)
   display_order Int?
   is_required Boolean @default(false)
+  example_path  String?
   path       String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -130,6 +131,7 @@ model DocumentProposal {
   document_id String
   attachment_path String
   mimetype     String
+  pass     Boolean @default(false)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 }

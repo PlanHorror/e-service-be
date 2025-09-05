@@ -1,5 +1,6 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsNotEmpty,
   IsOptional,
@@ -37,4 +38,17 @@ export class ReviewCreateDto {
   @IsNotEmpty()
   @Transform(({ value }) => Boolean(value))
   accepted: boolean;
+
+  // Validate as an array of strings (UUIDs)
+  @ApiProperty({
+    description: 'Array of document IDs associated with the review',
+    example: ['123e4567-e89b-12d3-a456-426614174000'],
+    type: [String],
+    format: 'uuid',
+    required: false,
+  })
+  @IsArray()
+  @IsUUID('all', { each: true })
+  @Type(() => String)
+  document_ids: string[];
 }

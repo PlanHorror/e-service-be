@@ -91,6 +91,12 @@ export class ReviewService {
     const proposal = await this.proposalService.getProposalById(
       data.proposal_id,
     );
+    data.document_ids.forEach((document_id) => {
+      const document = proposal.documents.find((doc) => doc.id === document_id);
+      if (!document) {
+        throw new BadRequestException(`Document ID ${document_id} is invalid`);
+      }
+    });
     if (
       proposal.status === ProposalStatus.REJECTED ||
       proposal.status === ProposalStatus.MANAGERAPPROVED
@@ -109,6 +115,21 @@ export class ReviewService {
     proposal.status = data.accepted
       ? ProposalStatus.MANAGERAPPROVED
       : ProposalStatus.REJECTED;
+    // Change all documents' pass status
+    try {
+      await this.prisma.documentProposal.updateMany({
+        where: {
+          id: { in: data.document_ids },
+        },
+        data: {
+          pass: true,
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to update document status: ${error.message}`,
+      );
+    }
     // Tạo review
     const review = await this.createReview({
       proposal_id: data.proposal_id,
