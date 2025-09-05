@@ -11,7 +11,7 @@ import {
   generateUniqueFileName,
   saveFile,
 } from '../../common';
-import { DocumentProposal, DocumentTemplate } from '@prisma/client';
+import { DocumentProposal, DocumentTemplate, Prisma } from '@prisma/client';
 
 @Injectable()
 export class DocumentService {
@@ -75,7 +75,7 @@ export class DocumentService {
     files: Express.Multer.File[],
   ) {
     try {
-      let documents: any[] = [];
+      let documents: Prisma.DocumentProposalCreateManyInput[] = [];
       data.forEach((doc) => {
         const fieldnamePrefix = `files[${doc.id}]`;
         const listFile = files.filter((file) =>

@@ -98,11 +98,6 @@ export class ActivityService {
       const activity = await this.prisma.activities.create({
         data: activityData,
       });
-      if (documentTemplates.length !== files.length) {
-        throw new BadRequestException(
-          'Mismatch between document templates and files',
-        );
-      }
       const documentTemplatesData: Prisma.DocumentTemplateCreateManyInput[] =
         [];
       if (documentTemplates && documentTemplates.length > 0 && files) {
@@ -110,10 +105,18 @@ export class ActivityService {
           const file = files.find(
             (f) => f.fieldname === `documentTemplates[${index}][file]`,
           );
+          const exampleFile = files.find(
+            (f) => f.fieldname === `documentTemplates[${index}][example_file]`,
+          );
           if (!file) {
             throw new BadRequestException(
               `File for document template ${template.name} is missing`,
             );
+          }
+          let example_path: string | null = null;
+          if (exampleFile) {
+            example_path = `attachments/${generateUniqueFileName(exampleFile)}`;
+            saveFile(exampleFile, example_path);
           }
           const path = `attachments/${generateUniqueFileName(file)}`;
           saveFile(file, path);
@@ -123,6 +126,7 @@ export class ActivityService {
             name: template.name,
             path,
             activity_id: activity.id,
+            example_path,
           });
         });
         await this.prisma.documentTemplate.createMany({
@@ -169,6 +173,15 @@ export class ActivityService {
           const file = files.find(
             (f) => f.fieldname === `documentTemplates[${index}][file]`,
           );
+          const exampleFile = files.find(
+            (f) => f.fieldname === `documentTemplates[${index}][example_file]`,
+          );
+          const example_path = exampleFile
+            ? `attachments/${generateUniqueFileName(exampleFile)}`
+            : oldData.example_path;
+          if (exampleFile) {
+            saveFile(exampleFile, example_path!);
+          }
           const { id, ...rest } = template;
           if (file) {
             const path = `attachments/${generateUniqueFileName(file)}`;
@@ -177,6 +190,7 @@ export class ActivityService {
             documentTemplatesCreateData.push({
               ...rest,
               path,
+              example_path,
               activity_id: activity.id,
             });
           } else {
@@ -184,18 +198,28 @@ export class ActivityService {
               ...rest,
               activity_id: activity.id,
               path: oldData.path,
+              example_path,
             });
           }
         } else {
           const file = files.find(
             (f) => f.fieldname === `documentTemplates[${index}][file]`,
           );
+          const exampleFile = files.find(
+            (f) => f.fieldname === `documentTemplates[${index}][example_file]`,
+          );
+          let example_path: string | null = null;
+          if (exampleFile) {
+            example_path = `attachments/${generateUniqueFileName(exampleFile)}`;
+            saveFile(exampleFile, example_path);
+          }
           if (file) {
             const path = `attachments/${generateUniqueFileName(file)}`;
             saveFile(file, path);
             documentTemplatesCreateData.push({
               ...template,
               path,
+              example_path,
               activity_id: activity.id,
             });
           } else {
