@@ -211,7 +211,16 @@ export class ProposalService {
             proposalType: true,
           },
         },
-        documents: true,
+        documents: {
+          include: {
+            document: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         created_at: order,
