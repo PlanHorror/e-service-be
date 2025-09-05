@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
+  BadRequestException
 } from '@nestjs/common';
 import { Role, User } from '@prisma/client';
 import { LoginDto, RegisterDto, UpdateUserDto } from '../auth/dto/auth.dto';
@@ -11,6 +12,7 @@ import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
 import { CreateUser, TokenPayload } from '../common';
 import * as jwt from 'jsonwebtoken';
+import { ProfileUpdateDto } from './dto/profile-update.dto';
 
 @Injectable()
 export class AccountService {
@@ -94,6 +96,120 @@ export class AccountService {
     }
 
     return this.updateAccount(id, updateData);
+  }
+
+  async getProfile(userId: string, options?: { includeActivity?: boolean; includeProposals?: boolean }) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        full_name: true,
+        phone: true,
+        address: true,
+        role: true,
+        is_active: true,
+        created_at: true,
+        updated_at: true,
+        ...(options?.includeProposals && {
+          news: {
+            select: {
+              id: true,
+              title: true,
+              created_at: true,
+            },
+          },
+        }),
+        ...(options?.includeActivity && {
+          proposalReviews: {
+            select: {
+              id: true,
+              comments: true,
+              created_at: true,
+            },
+          },
+        }),
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
+  async getProfileById(userId: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        full_name: true,
+        phone: true,
+        address: true,
+        is_active: true,
+        created_at: true,
+        updated_at: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
+
+  async updateProfile(userId: string, profileData: ProfileUpdateDto) {
+    // Check if user exists
+    const existingUser = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Check if email is already taken by another user
+    if (profileData.email !== existingUser.email) {
+      const emailExists = await this.prismaService.user.findUnique({
+        where: { email: profileData.email },
+      });
+
+      if (emailExists) {
+        throw new BadRequestException('Email already exists');
+      }
+    }
+
+    try {
+      const updatedUser = await this.prismaService.user.update({
+        where: { id: userId },
+        data: {
+          full_name: profileData.full_name,
+          email: profileData.email,
+          phone: profileData.phone,
+          address: profileData.address,
+        },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          full_name: true,
+          phone: true,
+          address: true,
+          is_active: true,
+          created_at: true,
+          updated_at: true,
+        },
+      });
+
+      return updatedUser;
+    } catch (error) {
+      throw new BadRequestException('Error updating profile');
+    }
   }
 
   async verifyAccount(data: LoginDto) {
