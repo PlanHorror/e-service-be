@@ -24,6 +24,7 @@ enum ProposalStatus {
 enum Role {
   ADMIN
   MANAGER
+  USER
 }
 
 model User {
