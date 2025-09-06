@@ -152,7 +152,7 @@ export class ProposalService {
       const list_file = files.filter((file) =>
         file.fieldname.startsWith(filename),
       );
-      if (list_file.length !== template.quantity) {
+      if (list_file.length < template.quantity) {
         throw new BadRequestException(
           `Invalid number of files for document template ${template.name}`,
         );
