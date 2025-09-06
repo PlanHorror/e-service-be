@@ -52,3 +52,17 @@ export class ReviewCreateDto {
   @Type(() => String)
   document_ids: string[];
 }
+
+export class AiReviewDto {
+  @IsUUID()
+  @IsNotEmpty()
+  proposal_id: string;
+
+  @IsBoolean()
+  @Type(() => Boolean)
+  approve: boolean;
+
+  @IsString()
+  @IsNotEmpty()
+  respond: string;
+}

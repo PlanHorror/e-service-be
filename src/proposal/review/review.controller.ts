@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { ReviewCreateDto } from './dto/review-create.dto';
+import { AiReviewDto, ReviewCreateDto } from './dto/review-create.dto';
 import { ReviewUpdateDto } from './dto/review-update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../../common/decorators';
@@ -58,5 +58,10 @@ export class ReviewController {
     @GetUser() user: User,
   ) {
     return this.reviewService.updateReviewService(id, data, user);
+  }
+
+  @Post('ai/send')
+  async aiReview(@Body() data: AiReviewDto) {
+    return data;
   }
 }
