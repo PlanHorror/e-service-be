@@ -185,8 +185,8 @@ export class ProposalService {
       activity.documentTemplates,
       files,
     );
-    await this.mailService.sendProposalCreationConfirmation(proposal);
-    await this.mailService.sendManagerNotification(proposal);
+    this.mailService.sendProposalCreationConfirmation(proposal);
+    this.mailService.sendManagerNotification(proposal);
     return {
       proposal,
       documents,

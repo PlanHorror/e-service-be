@@ -138,7 +138,7 @@ export class ReviewService {
       accepted: data.accepted,
     });
     // Gửi email thông báo cho user
-    await this.mailService.sendReviewNotification(proposal, review);
+    this.mailService.sendReviewNotification(proposal, review);
     return proposal;
   }
 
