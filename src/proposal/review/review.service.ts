@@ -91,6 +91,10 @@ export class ReviewService {
     const proposal = await this.proposalService.getProposalById(
       data.proposal_id,
     );
+    // Ensure document_ids is an array to prevent runtime errors
+    if (!data.document_ids) {
+      data.document_ids = [];
+    }
     data.document_ids.forEach((document_id) => {
       const document = proposal.documents.find((doc) => doc.id === document_id);
       if (!document) {
@@ -138,7 +142,9 @@ export class ReviewService {
       accepted: data.accepted,
     });
     // Gửi email thông báo cho user
-    this.mailService.sendReviewNotification(proposal, review);
+    // this.mailService.sendReviewNotification(proposal, review);
+    console.log('Review created:', review);
+    console.log('Proposal updated:', proposal);
     return proposal;
   }
 

@@ -48,6 +48,7 @@ export class ReviewCreateDto {
     required: false,
   })
   @IsArray()
+  @IsOptional()
   @IsUUID('all', { each: true })
   @Type(() => String)
   document_ids: string[];
