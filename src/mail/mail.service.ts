@@ -1,6 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { Proposal,ProposalReview } from '@prisma/client';
+import { Proposal, ProposalReview } from '@prisma/client';
+
+// Define type for proposal with documents
+type ProposalWithDocuments = Proposal & {
+  documents?: Array<{
+    id: string;
+    pass: boolean;
+    document?: {
+      id: string;
+      name: string;
+    };
+  }>;
+};
 
 @Injectable()
 export class MailService {
@@ -182,10 +194,49 @@ export class MailService {
       throw error;
     }
   }
-  async sendReviewNotification(proposal: Proposal, review: ProposalReview): Promise<void> {
+
+  async sendReviewNotification(proposal: ProposalWithDocuments, review: ProposalReview): Promise<void> {
     const statusText = review.accepted ? 'Đã được phê duyệt' : 'Đã bị từ chối';
     const statusColor = review.accepted ? '#28a745' : '#dc3545';
     const subject = review.accepted ? 'Đề Nghị Đã Được Phê Duyệt - VJU E-Service' : 'Đề Nghị Đã Bị Từ Chối - VJU E-Service';
+
+    // Generate documents table if documents exist
+    const documentsTable = proposal.documents && proposal.documents.length > 0 ? `
+      <h3 style="color: #2c3e50; font-size: 16px; margin-top: 25px; margin-bottom: 15px;">📋 Chi tiết tài liệu:</h3>
+      <div style="overflow-x: auto; margin: 20px 0;">
+        <table style="width: 100%; border-collapse: collapse; background: white; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+          <thead>
+            <tr style="background-color: #f8fafc;">
+              <th style="border: 1px solid #e2e8f0; padding: 12px; text-align: left; color: #475569; font-weight: 600; font-size: 14px;">Loại tài liệu</th>
+              <th style="border: 1px solid #e2e8f0; padding: 12px; text-align: center; color: #475569; font-weight: 600; font-size: 14px;">Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${proposal.documents.map((doc, index) => `
+              <tr style="background-color: ${index % 2 === 0 ? '#ffffff' : '#f9fafb'};">
+                <td style="border: 1px solid #e2e8f0; padding: 12px; color: #334155; font-size: 14px;">${doc.document?.name || 'Tài liệu không xác định'}</td>
+                <td style="border: 1px solid #e2e8f0; padding: 12px; text-align: center;">
+                  <span style="color: ${doc.pass ? '#28a745' : '#dc3545'}; font-weight: bold; background: ${doc.pass ? '#d4edda' : '#f8d7da'}; padding: 4px 12px; border-radius: 12px; font-size: 12px; text-transform: uppercase;">
+                    ${doc.pass ? '✓ Đã duyệt' : '✗ Từ chối'}
+                  </span>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    ` : '';
+
+    // Generate summary for rejected documents
+    const rejectedDocs = proposal.documents?.filter(doc => !doc.pass) || [];
+    const rejectedDocsSummary = rejectedDocs.length > 0 ? `
+      <div style="background: #fff3cd; padding: 15px; border-radius: 6px; border-left: 4px solid #ffc107; margin: 20px 0;">
+        <h4 style="color: #856404; margin: 0 0 10px 0; font-size: 14px;">⚠️ Tài liệu bị từ chối (${rejectedDocs.length}):</h4>
+        <ul style="margin: 0; padding-left: 20px; color: #856404;">
+          ${rejectedDocs.map(doc => `<li style="margin: 4px 0; font-size: 13px;">${doc.document?.name || 'Tài liệu không xác định'}</li>`).join('')}
+        </ul>
+      </div>
+    ` : '';
 
     const mailOptions = {
       from: process.env.EMAIL,
@@ -232,10 +283,13 @@ export class MailService {
                 ${review.comments ? `<p style="margin: 6px 0; color: #475569;"><strong>Ghi chú từ reviewer:</strong> ${review.comments}</p>` : ''}
               </div>
 
+              ${documentsTable}
+              ${rejectedDocsSummary}
+
               <!-- Alert Box -->
               <div style="background: ${review.accepted ? '#d4edda' : '#f8d7da'}; padding: 15px; border-radius: 6px; border-left: 4px solid ${statusColor}; margin-bottom: 20px;">
                 <p style="margin: 0; font-size: 14px; color: ${review.accepted ? '#155724' : '#721c24'};">
-                  <strong>${review.accepted ? 'Chúc mừng!' : 'Lưu ý:'}</strong> ${review.accepted ? 'Đề nghị của bạn đã được phê duyệt. Bạn sẽ nhận thêm hướng dẫn nếu cần.' : 'Đề nghị của bạn đã bị từ chối. Vui lòng kiểm tra ghi chú và gửi lại nếu cần.'}
+                  <strong>${review.accepted ? 'Chúc mừng!' : 'Lưu ý:'}</strong> ${review.accepted ? 'Đề nghị của bạn đã được phê duyệt. Bạn sẽ nhận thêm hướng dẫn nếu cần.' : 'Đề nghị của bạn đã bị từ chối. Vui lòng kiểm tra các tài liệu bị từ chối và gửi lại nếu cần.'}
                 </p>
               </div>
               
@@ -264,4 +318,3 @@ export class MailService {
     }
   }
 }
-

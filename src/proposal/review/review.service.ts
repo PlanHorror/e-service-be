@@ -91,16 +91,19 @@ export class ReviewService {
     const proposal = await this.proposalService.getProposalById(
       data.proposal_id,
     );
+    
     // Ensure document_ids is an array to prevent runtime errors
     if (!data.document_ids) {
       data.document_ids = [];
     }
+    
     data.document_ids.forEach((document_id) => {
       const document = proposal.documents.find((doc) => doc.id === document_id);
       if (!document) {
         throw new BadRequestException(`Document ID ${document_id} is invalid`);
       }
     });
+    
     if (
       proposal.status === ProposalStatus.REJECTED ||
       proposal.status === ProposalStatus.MANAGERAPPROVED
@@ -109,42 +112,54 @@ export class ReviewService {
         'Cannot create review for rejected or manager-approved proposals',
       );
     }
-    // Cập nhật status proposal
+
+    // Update proposal status
     await this.proposalService.updateProposal(proposal.id, {
       status: data.accepted
         ? ProposalStatus.MANAGERAPPROVED
         : ProposalStatus.REJECTED,
     });
-    // Set status mới trực tiếp vào object (tốt hơn: tránh query thừa)
-    proposal.status = data.accepted
-      ? ProposalStatus.MANAGERAPPROVED
-      : ProposalStatus.REJECTED;
-    // Change all documents' pass status
+
+    // Update documents' pass status in database
     try {
-      await this.prisma.documentProposal.updateMany({
-        where: {
-          id: { in: data.document_ids },
-        },
-        data: {
-          pass: true,
-        },
-      });
+      if (data.document_ids.length > 0) {
+        await this.prisma.documentProposal.updateMany({
+          where: {
+            id: { in: data.document_ids },
+          },
+          data: {
+            pass: true,
+          },
+        });
+      }
     } catch (error) {
       throw new InternalServerErrorException(
         `Failed to update document status: ${error.message}`,
       );
     }
-    // Tạo review
+
+    // Create review
     const review = await this.createReview({
       proposal_id: data.proposal_id,
       reviewer_id: user.id,
       comments: data.comments,
       accepted: data.accepted,
     });
-    // Gửi email thông báo cho user
-    // this.mailService.sendReviewNotification(proposal, review);
-    console.log('Review created:', review);
-    console.log('Proposal updated:', proposal);
+
+    // Update in-memory proposal object với status mới
+    proposal.status = data.accepted
+      ? ProposalStatus.MANAGERAPPROVED
+      : ProposalStatus.REJECTED;
+
+    // Update in-memory documents' pass status
+    proposal.documents.forEach((doc) => {
+      if (data.document_ids.includes(doc.id)) {
+        doc.pass = true;
+      }
+    });
+
+    // Send notification email
+    this.mailService.sendReviewNotification(proposal, review);
     return proposal;
   }
 
