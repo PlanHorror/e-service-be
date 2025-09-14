@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { Proposal, ProposalReview } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
 
 // Define type for proposal with documents
 type ProposalWithDocuments = Proposal & {
@@ -17,23 +18,83 @@ type ProposalWithDocuments = Proposal & {
 @Injectable()
 export class MailService {
   private transporter: nodemailer.Transporter;
+  private emailQueue: Array<{
+    to: string;
+    subject: string;
+    html: string;
+  }> = [];
+  private isProcessing = false;
 
-  constructor() {
+  constructor(private readonly prisma: PrismaService) {
+    // Use connection pooling for better performance
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
+      rateLimit: 14, // emails per second
       auth: {
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASSWORD,
       },
     });
+
+    // Process queue every 500ms
+    setInterval(() => this.processEmailQueue(), 500);
+  }
+
+  private async processEmailQueue() {
+    if (this.isProcessing || this.emailQueue.length === 0) return;
+    
+    this.isProcessing = true;
+    
+    try {
+      // Process up to 3 emails at once
+      const batch = this.emailQueue.splice(0, 3);
+      
+      await Promise.all(
+        batch.map(async (emailData) => {
+          try {
+            await this.transporter.sendMail(emailData);
+            console.log(`Email sent to ${emailData.to}`);
+          } catch (error) {
+            console.error(`Failed to send email to ${emailData.to}:`, error);
+          }
+        })
+      );
+    } finally {
+      this.isProcessing = false;
+    }
+  }
+
+  private addToQueue(to: string, subject: string, html: string) {
+    this.emailQueue.push({ to, subject, html });
+  }
+
+  private async getManagerEmails(): Promise<string[]> {
+    try {
+      const managers = await this.prisma.user.findMany({
+        where: {
+          role: {
+            in: ['MANAGER', 'ADMIN'],
+          },
+          is_active: true,
+        },
+        select: {
+          email: true,
+        },
+      });
+
+      return managers.map(manager => manager.email);
+    } catch (error) {
+      console.error('Error fetching manager emails:', error);
+      // Fallback to environment variable if database query fails
+      return process.env.MANAGER_EMAIL ? [process.env.MANAGER_EMAIL] : [];
+    }
   }
 
   async sendProposalCreationConfirmation(proposal: Proposal): Promise<void> {
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: proposal.email,
-      subject: 'Xác Nhận Đề Nghị - VJU E-Service',
-      html: `
+    const html = `
         <!DOCTYPE html>
         <html lang="vi">
         <head>
@@ -81,7 +142,7 @@ export class MailService {
               </div>
               
               <p style="font-size: 15px; color: #334155;">Đề nghị của bạn đang được xem xét. Bạn sẽ nhận thông báo khi có cập nhật.</p>
-              <p style="font-size: 15px; color: #334155;">Xin cảm ơn bạn đã sử dụng dịch vụ!</p>
+              <p style="font-size: 15px; color: #334155;">Xin cảm ọn bạn đã sử dụng dịch vụ!</p>
             </main>
 
             <!-- Footer -->
@@ -94,27 +155,25 @@ export class MailService {
           </div>
         </body>
         </html>
-      `,
-    };
+      `;
 
-    try {
-      await this.transporter.sendMail(mailOptions);
-      console.log(`Confirmation email sent to ${proposal.email}`);
-    } catch (error) {
-      console.error('Error sending confirmation email:', error);
-      throw error;
-    }
+    this.addToQueue(
+      proposal.email,
+      'Xác Nhận Đề Nghị - VJU E-Service',
+      html
+    );
   }
 
-  async sendManagerNotification(
-    proposal: Proposal,
-    managerEmail: string = process.env.MANAGER_EMAIL!,
-  ): Promise<void> {
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: managerEmail,
-      subject: 'Thông Báo Đề Nghị Mới - VJU E-Service',
-      html: `
+  async sendManagerNotification(proposal: Proposal): Promise<void> {
+    // Get all manager/admin emails from database
+    const managerEmails = await this.getManagerEmails();
+    
+    if (managerEmails.length === 0) {
+      console.warn('No manager emails found. Cannot send manager notification.');
+      return;
+    }
+
+    const html = `
         <!DOCTYPE html>
         <html lang="vi">
         <head>
@@ -183,16 +242,18 @@ export class MailService {
           </div>
         </body>
         </html>
-      `,
-    };
+      `;
 
-    try {
-      await this.transporter.sendMail(mailOptions);
-      console.log(`Manager notification sent to ${managerEmail}`);
-    } catch (error) {
-      console.error('Error sending manager notification:', error);
-      throw error;
-    }
+    // Send email to all managers/admins using queue
+    managerEmails.forEach(email => {
+      this.addToQueue(
+        email,
+        'Thông Báo Đề Nghị Mới - VJU E-Service',
+        html
+      );
+    });
+
+    console.log(`Manager notifications queued for ${managerEmails.length} recipients: ${managerEmails.join(', ')}`);
   }
 
   async sendReviewNotification(proposal: ProposalWithDocuments, review: ProposalReview): Promise<void> {
@@ -238,11 +299,7 @@ export class MailService {
       </div>
     ` : '';
 
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: proposal.email,
-      subject,
-      html: `
+    const html = `
         <!DOCTYPE html>
         <html lang="vi">
         <head>
@@ -306,15 +363,8 @@ export class MailService {
           </div>
         </body>
         </html>
-      `,
-    };
+      `;
 
-    try {
-      await this.transporter.sendMail(mailOptions);
-      console.log(`Review notification sent to ${proposal.email}`);
-    } catch (error) {
-      console.error('Error sending review notification:', error);
-      throw error;
-    }
+    this.addToQueue(proposal.email, subject, html);
   }
 }
