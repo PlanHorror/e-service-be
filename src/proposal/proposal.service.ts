@@ -7,8 +7,9 @@ import {
 import { PrismaService } from '../prisma.service';
 import { DocumentService } from './document/document.service';
 import { ProposalCreateDto } from './dto/proposal-create.dto';
+import { ProposalUpdateDto } from './dto/proposal-update.dto';
 import { ActivityService } from './activity/activity.service';
-import { Proposal, ProposalStatus, ProposalState, ExtraDocumentProposal } from '@prisma/client';
+import { Proposal, ProposalStatus, ProposalState, ExtraDocumentProposal, DocumentProposal } from '@prisma/client';
 import { generateCode, generateSecurityCode, generateUniqueFileName, saveFile, ProposalCreate } from '../common';
 import { ProposalQueryDto } from './dto/proposal-query.dto';
 import { MailService } from 'src/mail/mail.service';
@@ -235,6 +236,98 @@ export class ProposalService {
       proposal,
       documents,
       extraDocuments,
+    };
+  }
+
+  async updateProposalService(
+    id: string,
+    data: ProposalUpdateDto,
+    files?: Express.Multer.File[],
+    extraFiles?: Express.Multer.File[],
+  ) {
+    const existingProposal = await this.getProposalById(id);
+
+    const updateData: Partial<Proposal> = {};
+    if (data.full_name) updateData.full_name = data.full_name;
+    if (data.email) updateData.email = data.email;
+    if (data.phone) updateData.phone = data.phone;
+    if (data.address) updateData.address = data.address;
+    if (data.note !== undefined) updateData.note = data.note;
+    if (data.respond !== undefined) updateData.respond = data.respond;
+    if (data.state) updateData.state = data.state;
+    if (data.status) updateData.status = data.status;
+
+    const activity = await this.activityService.getActivityById(
+      existingProposal.activity_id,
+    );
+
+    let newDocuments: DocumentProposal[] = [];
+    if (files && files.length > 0) {
+      const requiredFiles = files.filter((file) => file.fieldname.startsWith('files['));
+      
+      newDocuments = await Promise.all(
+        requiredFiles.map(async (file) => {
+          const fieldnameParts = file.fieldname.match(/files\[(.+?)\]/);
+          if (!fieldnameParts) {
+            throw new BadRequestException('Invalid file fieldname format');
+          }
+          const documentTemplateId = fieldnameParts[1];
+
+          const template = activity.documentTemplates.find(
+            (t) => t.id === documentTemplateId,
+          );
+          if (!template) {
+            throw new BadRequestException(
+              `Document template not found for id: ${documentTemplateId}`,
+            );
+          }
+
+          const fileName = generateUniqueFileName(file);
+          const path = `${process.env.ATTACHMENTS_PATH || 'attachments'}/${fileName}`;
+          await saveFile(file, path);
+
+          return this.prisma.documentProposal.create({
+            data: {
+              proposal_id: id,
+              document_id: documentTemplateId,
+              attachment_path: path,
+              mimetype: file.mimetype,
+              pass: false,
+            },
+          });
+        }),
+      );
+    }
+
+    let newExtraDocuments: ExtraDocumentProposal[] = [];
+    if (extraFiles && extraFiles.length > 0) {
+      newExtraDocuments = await Promise.all(
+        extraFiles.map(async (file, index) => {
+          const fileName = generateUniqueFileName(file);
+          const path = `${process.env.ATTACHMENTS_PATH || 'attachments'}/${fileName}`;
+          await saveFile(file, path);
+
+          const metadata = data.extraFilesMetadata?.[index];
+
+          return this.prisma.extraDocumentProposal.create({
+            data: {
+              proposal_id: id,
+              name: metadata?.name || file.originalname,
+              description: metadata?.description || null,
+              attachment_path: path,
+              mimetype: file.mimetype,
+            },
+          });
+        }),
+      );
+    }
+
+    const updatedProposal = await this.updateProposal(id, updateData);
+
+    return {
+      proposal: updatedProposal,
+      newDocuments,
+      newExtraDocuments,
     };
   }
 

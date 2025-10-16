@@ -7,12 +7,14 @@ import {
   Param,
   ParseFilePipeBuilder,
   Post,
+  Put,
   Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { ProposalService } from './proposal.service';
 import { ProposalCreateDto } from './dto/proposal-create.dto';
+import { ProposalUpdateDto } from './dto/proposal-update.dto';
 import {
   AnyFilesInterceptor,
 } from '@nestjs/platform-express';
@@ -155,6 +157,115 @@ export class ProposalController {
       data,
       requiredFiles,
       extraFiles.length > 0 ? extraFiles : undefined,
+    );
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Update proposal with optional new documents and extra files' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Update proposal data with optional new files',
+    schema: {
+      type: 'object',
+      properties: {
+        full_name: {
+          type: 'string',
+          example: 'John Doe',
+          description: 'Full name (optional)',
+        },
+        email: {
+          type: 'string',
+          example: 'john@example.com',
+          description: 'Email address (optional)',
+        },
+        phone: {
+          type: 'string',
+          example: '+84987654321',
+          description: 'Phone number (optional)',
+        },
+        address: {
+          type: 'string',
+          example: '123 Main St',
+          description: 'Address (optional)',
+        },
+        state: {
+          type: 'string',
+          enum: ['DRAFT', 'SUBMITTED', 'PUBLIC'],
+          example: 'SUBMITTED',
+          description: 'Proposal state (optional)',
+        },
+        status: {
+          type: 'string',
+          enum: ['PENDING', 'AIAPPROVED', 'MANAGERAPPROVED', 'REJECTED'],
+          example: 'PENDING',
+          description: 'Proposal status (optional)',
+        },
+        note: {
+          type: 'string',
+          example: 'Updated requirements',
+          description: 'Additional notes (optional)',
+        },
+        respond: {
+          type: 'string',
+          example: 'Approved with conditions',
+          description: 'Admin/Manager response (optional)',
+        },
+        'files[documentTemplateId]': {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'New document files to add (optional, fieldname format: files[templateId])',
+        },
+        extraFiles: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'New extra files to add (optional)',
+        },
+        'extraFilesMetadata[0][name]': {
+          type: 'string',
+          example: 'New Certificate',
+          description: 'Name for new extra file at index 0 (optional)',
+        },
+        'extraFilesMetadata[0][description]': {
+          type: 'string',
+          example: 'New document description',
+          description: 'Description for new extra file at index 0 (optional)',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Proposal updated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request - Invalid data' })
+  @ApiResponse({ status: 404, description: 'Proposal not found' })
+  @ApiResponse({ status: 422, description: 'File validation failed' })
+  @UseInterceptors(AnyFilesInterceptor())
+  
+  async updateProposal(
+    @Param('id') id: string,
+    @Body() data: ProposalUpdateDto,
+    @UploadedFiles(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({ maxSize: 10 * 1024 * 1024 })
+        .build({
+          fileIsRequired: false,
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    files?: Array<Express.Multer.File>,
+  ) {
+    const requiredFiles = files?.filter((file) => file.fieldname.startsWith('files['));
+    const extraFiles = files?.filter((file) => file.fieldname === 'extraFiles');
+
+    return this.proposalService.updateProposalService(
+      id,
+      data,
+      requiredFiles,
+      (extraFiles ?? []).length > 0 ? extraFiles : undefined,
     );
   }
 
