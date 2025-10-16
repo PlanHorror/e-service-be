@@ -59,6 +59,7 @@ export class ProposalService {
             },
           },
           extraDocuments: true,
+          activity: true,
         },
       });
       if (!proposal) {
