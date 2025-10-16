@@ -7,4 +7,5 @@ export interface ProposalCreate {
   phone: string;
   address: string;
   note?: string;
+  state?: 'DRAFT' | 'SUBMITTED' | 'PUBLIC';
 }

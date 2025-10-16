@@ -1,18 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
   IsString,
   IsUUID,
-  ValidateNested,
 } from 'class-validator';
-import {
-  DocumentCreateDto,
-  DocumentNested,
-} from '../document/dto/document-create.dto';
-import { Type } from 'class-transformer';
+import { ProposalState } from '@prisma/client';
 
 export class ProposalCreateDto {
   @ApiProperty({ description: 'Activity ID', type: String, format: 'uuid' })
@@ -41,12 +37,22 @@ export class ProposalCreateDto {
   address: string;
 
   @ApiProperty({
+    description: 'State of the proposal',
+    enum: ProposalState,
+    example: ProposalState.SUBMITTED,
+    required: false,
+    default: ProposalState.DRAFT,
+  })
+  @IsEnum(ProposalState)
+  @IsOptional()
+  state?: ProposalState;
+
+  @ApiProperty({
     description: 'Additional notes',
     example: 'Special requirements',
     required: false,
   })
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
-  note: string;
+  note?: string;
 }

@@ -8,8 +8,8 @@ import { PrismaService } from '../prisma.service';
 import { DocumentService } from './document/document.service';
 import { ProposalCreateDto } from './dto/proposal-create.dto';
 import { ActivityService } from './activity/activity.service';
-import { Proposal, ProposalStatus } from '@prisma/client';
-import { generateCode, generateSecurityCode, ProposalCreate } from '../common';
+import { Proposal, ProposalStatus, ProposalState, ExtraDocumentProposal } from '@prisma/client';
+import { generateCode, generateSecurityCode, generateUniqueFileName, saveFile, ProposalCreate } from '../common';
 import { ProposalQueryDto } from './dto/proposal-query.dto';
 import { MailService } from 'src/mail/mail.service';
 
@@ -82,7 +82,6 @@ export class ProposalService {
   }
 
   async findProposalsByCodeService(query: ProposalQueryDto) {
-    // Query proposal trước để check status
     const proposal = await this.prisma.proposal.findUnique({
       where: {
         security_code: query.security_code,
@@ -101,7 +100,6 @@ export class ProposalService {
       throw new NotFoundException('Proposal not found');
     }
 
-    // Nếu status là REJECTED, query lại với proposalReviews (chỉ select fields an toàn)
     if (proposal.status === ProposalStatus.REJECTED) {
       const proposalWithReviews = await this.prisma.proposal.findUnique({
         where: {
@@ -127,7 +125,6 @@ export class ProposalService {
                   username: true,
                   full_name: true,
                   role: true,
-                  // Bỏ password và các fields nhạy cảm
                 },
               },
             },
@@ -143,6 +140,7 @@ export class ProposalService {
   async createProposalService(
     data: ProposalCreateDto,
     files: Express.Multer.File[],
+    extraFiles?: Express.Multer.File[],
   ) {
     const activity = await this.activityService.getActivityById(
       data.activity_id,
@@ -179,17 +177,38 @@ export class ProposalService {
       phone: data.phone,
       address: data.address,
       note: data.note,
+      state: data.state ? (data.state as ProposalState) : ProposalState.DRAFT,
     });
     const documents = this.documentService.createMultipleDocument(
       proposal.id,
       activity.documentTemplates,
       files,
     );
+    let extraDocuments: ExtraDocumentProposal[] = [];
+    if (extraFiles && extraFiles.length > 0) {
+      extraDocuments = await Promise.all(
+        extraFiles.map(async (file) => {
+          const fileName = generateUniqueFileName(file);
+          const path = `${process.env.ATTACHMENTS_PATH || 'attachments'}/${fileName}`;
+          await saveFile(file, path);
+          return this.prisma.extraDocumentProposal.create({
+            data: {
+              proposal_id: proposal.id,
+              name: file.originalname,
+              description: null,
+              attachment_path: path,
+              mimetype: file.mimetype,
+            },
+          });
+        }),
+      );
+    }
     this.mailService.sendProposalCreationConfirmation(proposal);
     this.mailService.sendManagerNotification(proposal);
     return {
       proposal,
       documents,
+      extraDocuments,
     };
   }
 
@@ -236,7 +255,6 @@ export class ProposalService {
 
     let total: number | undefined;
     if (page === 1) {
-      // Chỉ đếm total ở trang đầu
       total = await this.prisma.proposal.count({
         where: whereClause,
       });
