@@ -233,6 +233,7 @@ export class AccountService {
     const payload: TokenPayload = {
       id: user.id,
       username: user.username,
+      email: user.email,
       role: user.role,
     };
     return jwt.sign(payload, process.env.JWT_SECRET || 'defaultSecret', {});

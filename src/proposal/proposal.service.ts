@@ -48,6 +48,28 @@ export class ProposalService {
     }
   }
 
+  async getProposalByEmail(email: string) {
+    try {
+      const proposal = await this.prisma.proposal.findMany({
+        where: { email },
+        include: {
+          documents: {
+            include: {
+              document: true,
+            },
+          },
+          extraDocuments: true,
+        },
+      });
+      if (!proposal) {
+        throw new NotFoundException('Proposal not found');
+      }
+      return proposal;
+    } catch {
+      throw new NotFoundException('Proposal not found');
+    }
+  }
+  
   async createProposal(data: ProposalCreate) {
     try {
       return await this.prisma.proposal.create({
