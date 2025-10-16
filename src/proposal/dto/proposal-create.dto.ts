@@ -7,8 +7,31 @@ import {
   IsPhoneNumber,
   IsString,
   IsUUID,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
 import { ProposalState } from '@prisma/client';
+import { Type } from 'class-transformer';
+
+export class ExtraFileMetadataDto {
+  @ApiProperty({
+    description: 'Name of the extra document',
+    example: 'Additional Certificate',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @ApiProperty({
+    description: 'Description of the extra document',
+    example: 'Extra certification document',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  description?: string;
+}
 
 export class ProposalCreateDto {
   @ApiProperty({ description: 'Activity ID', type: String, format: 'uuid' })
@@ -55,4 +78,15 @@ export class ProposalCreateDto {
   @IsString()
   @IsOptional()
   note?: string;
+
+  @ApiProperty({
+    description: 'Metadata for extra files (names and descriptions)',
+    type: [ExtraFileMetadataDto],
+    required: false,
+  })
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => ExtraFileMetadataDto)
+  extraFilesMetadata?: ExtraFileMetadataDto[];
 }

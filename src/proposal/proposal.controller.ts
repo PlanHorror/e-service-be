@@ -15,7 +15,6 @@ import { ProposalService } from './proposal.service';
 import { ProposalCreateDto } from './dto/proposal-create.dto';
 import {
   AnyFilesInterceptor,
-  FilesInterceptor,
 } from '@nestjs/platform-express';
 import {
   ProposalAllQueryDto,
@@ -60,7 +59,7 @@ export class ProposalController {
   @ApiOperation({ summary: 'Create new proposal with documents and extra files' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Proposal data with required documents and optional extra files',
+    description: 'Proposal data with required documents and optional extra files with metadata',
     schema: {
       type: 'object',
       properties: {
@@ -112,6 +111,16 @@ export class ProposalController {
           },
           description: 'Additional optional files',
         },
+        'extraFilesMetadata[0][name]': {
+          type: 'string',
+          example: 'Additional Certificate',
+          description: 'Name for extra file at index 0 (optional)',
+        },
+        'extraFilesMetadata[0][description]': {
+          type: 'string',
+          example: 'Extra certification document',
+          description: 'Description for extra file at index 0 (optional)',
+        },
       },
     },
   })
@@ -131,7 +140,6 @@ export class ProposalController {
     )
     files: Array<Express.Multer.File>,
   ) {
-    // Separate required template files from extra files
     const requiredFiles = files.filter((file) => file.fieldname.startsWith('files['));
     const extraFiles = files.filter((file) => file.fieldname === 'extraFiles');
 

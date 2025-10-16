@@ -36,6 +36,7 @@ export class ProposalService {
               document: true,
             },
           },
+          extraDocuments: true,
         },
       });
       if (!proposal) {
@@ -163,7 +164,6 @@ export class ProposalService {
         where: { code },
       });
       if (!existingProposal) {
-        code = code;
         break;
       }
     }
@@ -187,15 +187,18 @@ export class ProposalService {
     let extraDocuments: ExtraDocumentProposal[] = [];
     if (extraFiles && extraFiles.length > 0) {
       extraDocuments = await Promise.all(
-        extraFiles.map(async (file) => {
+        extraFiles.map(async (file, index) => {
           const fileName = generateUniqueFileName(file);
           const path = `${process.env.ATTACHMENTS_PATH || 'attachments'}/${fileName}`;
           await saveFile(file, path);
+          
+          const metadata = data.extraFilesMetadata?.[index];
+          
           return this.prisma.extraDocumentProposal.create({
             data: {
               proposal_id: proposal.id,
-              name: file.originalname,
-              description: null,
+              name: metadata?.name || file.originalname,
+              description: metadata?.description || null,
               attachment_path: path,
               mimetype: file.mimetype,
             },
@@ -247,6 +250,7 @@ export class ProposalService {
             },
           },
         },
+        extraDocuments: true,
       },
       orderBy: {
         created_at: order,
