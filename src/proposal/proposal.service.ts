@@ -62,7 +62,7 @@ export class ProposalService {
         },
       });
       if (!proposal) {
-        throw new NotFoundException('Proposal not found');
+        return [];
       }
       return proposal;
     } catch {

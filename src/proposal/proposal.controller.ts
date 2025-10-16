@@ -47,11 +47,11 @@ export class ProposalController {
     return this.proposalService.getProposalById(id);
   }
 
-  @Get('find/:email')
+  @Get('find')
   @ApiOperation({ summary: 'Get proposal by email' })
   @ApiResponse({ status: 200, description: 'Proposal retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Proposal not found' })
-  async getProposalByEmail(@Param('email') email: string) {
+  async getProposalByEmail(@Query('email') email: string) {
     return this.proposalService.getProposalByEmail(email);
   }
 
