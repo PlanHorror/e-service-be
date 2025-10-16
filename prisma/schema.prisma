@@ -16,11 +16,25 @@ datasource db {
 
 }
 
+enum FeedbackCategory {
+  DICHVUCONG
+  COSOVATCHAT
+  GIAODUCDAOTAO
+  HANHCHINH
+  KHAC
+}
+
 enum ProposalStatus {
   PENDING
   AIAPPROVED
   MANAGERAPPROVED
   REJECTED
+}
+
+enum ProposalState {
+  DRAFT
+  SUBMITTED
+  PUBLIC
 }
 
 enum Role {
@@ -99,11 +113,12 @@ model Proposal {
   note       String?
   respond    String?
   status     ProposalStatus @default(PENDING)
+  state      ProposalState@default(DRAFT)
   completed_at DateTime?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-
   documents   DocumentProposal[]
+  extraDocuments  ExtraDocumentProposal[]
   proposalReviews ProposalReview[]
 }
 
@@ -121,6 +136,18 @@ model DocumentTemplate {
   updated_at DateTime @updatedAt
 
   documents   DocumentProposal[]
+}
+
+model ExtraDocumentProposal {
+  id              String    @id @default(uuid())
+  proposal        Proposal  @relation(fields: [proposal_id], references: [id], onDelete: Cascade)
+  proposal_id     String
+  name            String
+  description     String?
+  attachment_path String
+  mimetype        String
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
 }
 
 model DocumentProposal {
@@ -148,14 +175,6 @@ model ProposalReview {
   updated_at DateTime @updatedAt
 
   @@unique([proposal_id, reviewer_id])
-}
-
-enum FeedbackCategory {
-  DICHVUCONG
-  COSOVATCHAT
-  GIAODUCDAOTAO
-  HANHCHINH
-  KHAC
 }
 
 model Feedback {
